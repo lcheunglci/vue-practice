@@ -17,7 +17,10 @@ import RobotBuilder from './build/RobotBuilder.vue'
 export default {
   name: 'App',
   components: {
-    RobotBuilder
+    RobotBuilder,
+    data() {
+      return {};
+    }
   }
 }
 </script>
