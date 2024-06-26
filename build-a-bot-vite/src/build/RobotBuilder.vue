@@ -53,7 +53,7 @@
         <tbody>
           <tr v-for="(robot, index) in cart" :key="index">
             <td>{{ robot.head.title }}</td>
-            <td class="cost">{{ robot.cost }}</td>
+            <td class="cost">{{ toCurrency(robot.cost) }}</td>
           </tr>
         </tbody>
       </table>
@@ -62,7 +62,10 @@
 </template>
 
 <script>
-import parts from '../data/parts'
+import parts from '../data/parts';
+import { toCurrency } from '../shared/formatters';
+import createdHook from './created-hook-mixin';
+
 
 const getNextValidIndex = (index, length) => {
   const incrementedIndex = index + 1
@@ -76,6 +79,10 @@ const getPreviousValidIndex = (index, length) => {
 
 export default {
   name: 'RobotBuilder',
+  mixins: [createdHook],
+  created() {
+    console.log('Component created')
+  },
   data() {
     return {
       availableParts: parts,
@@ -110,6 +117,7 @@ export default {
       this.cart.push({ ...robot, cost })
       console.log(this.cart.length)
     },
+    toCurrency,
     selectNextHead() {
       this.selectedHeadIndex = getNextValidIndex(
         this.selectedHeadIndex,
@@ -307,7 +315,8 @@ export default {
   font-size: 16px;
 }
 
-td, th {
+td,
+th {
   text-align: left;
   padding: 5px;
   padding-right: 20px;
@@ -316,5 +325,4 @@ td, th {
 .cost {
   text-align: right;
 }
-
 </style>
