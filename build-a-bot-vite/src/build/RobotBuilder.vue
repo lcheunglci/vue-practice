@@ -1,14 +1,17 @@
 <template>
   <div>
-    <div class="top-row">
-      <div class="top part">
-        <div class="robot-name">
-          {{ selectedRobot.head.title }}
-        <span v-if="selectedRobot.head.onSale" class="sale">Sale!</span>
+    <div class="content">
+      <button class="add-to-cart" @click="addToCart()">Add to Cart</button>
+      <div class="top-row">
+        <div class="top part">
+          <div class="robot-name">
+            {{ selectedRobot.head.title }}
+            <span v-if="selectedRobot.head.onSale" class="sale">Sale!</span>
+          </div>
+          <img :src="selectedRobot.head.imageUrl" alt="head" />
+          <button @click="selectPreviousHead()" class="prev-selector">&#9668;</button>
+          <button @click="selectNextHead()" class="next-selector">&#9658;</button>
         </div>
-        <img :src="selectedRobot.head.imageUrl" alt="head" />
-        <button @click="selectPreviousHead()" class="prev-selector">&#9668;</button>
-        <button @click="selectNextHead()" class="next-selector">&#9658;</button>
       </div>
     </div>
     <div class="middle-row">
@@ -60,7 +63,8 @@ export default {
       selectedLeftArmIndex: 0,
       selectedRightArmIndex: 0,
       selectedTorsoIndex: 0,
-      selectedBaseIndex: 0
+      selectedBaseIndex: 0,
+      cart: []
     }
   },
   computed: {
@@ -70,11 +74,21 @@ export default {
         leftArm: this.availableParts.arms[this.selectedLeftArmIndex],
         torso: this.availableParts.torsos[this.selectedTorsoIndex],
         rightArm: this.availableParts.arms[this.selectedRightArmIndex],
-        base: this.availableParts.bases[this.selectedBaseIndex],
-      };
+        base: this.availableParts.bases[this.selectedBaseIndex]
+      }
     }
   },
   methods: {
+    addToCart() {
+      const robot = this.selectedRobot;
+      const cost = robot.head.cost +
+      robot.leftArm.cost + 
+      robot.torso.cost + 
+      robot.rightArm.cost +
+      robot.base.cost
+      this.cart.push({ ...robot, cost});
+      console.log(this.cart.length);
+    },
     selectNextHead() {
       this.selectedHeadIndex = getNextValidIndex(
         this.selectedHeadIndex,
@@ -260,4 +274,15 @@ export default {
   color: red;
 }
 
+.content {
+  position: relative;
+}
+
+.add-to-cart {
+  position: absolute;
+  right: 30px;
+  width: 220px;
+  padding: 3px;
+  font-size: 16px;
+}
 </style>
