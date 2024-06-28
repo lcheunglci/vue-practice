@@ -2,24 +2,28 @@
   <header>
     <nav>
       <ul>
-        <li class="nav-item"><img src="./assets/build-a-bot-logo.png" alt="logo" class="logo"></li>
+        <li class="nav-item">
+          <img src="./assets/build-a-bot-logo.png" alt="logo" class="logo" />
+        </li>
       </ul>
     </nav>
   </header>
   <main>
     <RobotBuilder />
+    <!--<ProductSearch /> -->
   </main>
 </template>
 
 <script>
 // import HomePage from './home/HomePage.vue'
 import RobotBuilder from './build/RobotBuilder.vue'
+// import ProductSearch from './search/ProductSearch.vue';
 export default {
   name: 'App',
   components: {
     RobotBuilder,
     data() {
-      return {};
+      return {}
     }
   }
 }
@@ -42,7 +46,7 @@ main {
   min-height: 300px;
 }
 
-header { 
+header {
   background-color: #999;
   width: 1460px;
   margin: 0 auto;
@@ -64,5 +68,4 @@ ul {
   vertical-align: middle;
   height: 30px;
 }
-
 </style>
