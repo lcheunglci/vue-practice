@@ -4,7 +4,7 @@
       <div class="content">
         <button class="add-to-cart" @click="addToCart()">Add to Cart</button>
         <div class="top-row">
-          <div class="top part">
+          <div class="top part" :style="headBorderStyle">
             <div class="robot-name">
               {{ selectedRobot.head.title }}
               <span v-if="selectedRobot.head.onSale" class="sale">Sale!</span>
@@ -84,9 +84,13 @@ const selectedTorsoIndex = ref(0)
 const selectedBaseIndex = ref(0)
 const cart = ref([])
 
+const headBorderStyle = computed(() => ({
+  border: selectedRobot.head.onSale ? '3px solid red' : '3px solid #aaa'
+}))
+
 onMounted(() => {
-  console.log("onMount executed");
-});
+  console.log('onMount executed')
+})
 
 const selectedRobot = computed(() => ({
   head: availableParts.heads[selectedHeadIndex.value],
@@ -109,35 +113,49 @@ const selectNextHead = () => {
   selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.heads.length)
 }
 const selectPreviousHead = () => {
-  selectedHeadIndex.value = getPreviousValidIndex(selectedHeadIndex.value, availableParts.heads.length)
+  selectedHeadIndex.value = getPreviousValidIndex(
+    selectedHeadIndex.value,
+    availableParts.heads.length
+  )
 }
 const selectNextLeftArm = () => {
   selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.arms.length)
 }
 const selectPreviousLeftArm = () => {
-  selectedHeadIndex.value = getPreviousValidIndex(selectedHeadIndex.value, availableParts.arms.length)
+  selectedHeadIndex.value = getPreviousValidIndex(
+    selectedHeadIndex.value,
+    availableParts.arms.length
+  )
 }
 const selectNextRightArm = () => {
   selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.arms.length)
 }
 const selectPreviousRightArm = () => {
-  selectedHeadIndex.value = getPreviousValidIndex(selectedHeadIndex.value, availableParts.arms.length)
+  selectedHeadIndex.value = getPreviousValidIndex(
+    selectedHeadIndex.value,
+    availableParts.arms.length
+  )
 }
 const selectNextTorso = () => {
   selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.torsos.length)
 }
 const selectPreviousTorso = () => {
-  selectedHeadIndex.value = getPreviousValidIndex(selectedHeadIndex.value, availableParts.torsos.length)
+  selectedHeadIndex.value = getPreviousValidIndex(
+    selectedHeadIndex.value,
+    availableParts.torsos.length
+  )
 }
 const selectNextBase = () => {
   selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.bases.length)
 }
 
 const selectPreviousBase = () => {
-  selectedHeadIndex.value = getPreviousValidIndex(selectedHeadIndex.value, availableParts.bases.length)
+  selectedHeadIndex.value = getPreviousValidIndex(
+    selectedHeadIndex.value,
+    availableParts.bases.length
+  )
 }
 // #endregion
-
 </script>
 
 <style scoped>
