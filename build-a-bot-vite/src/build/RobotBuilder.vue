@@ -88,6 +88,8 @@ const saleBorderClass = computed(() => ({
   border: selectedRobot.head.onSale ? 'sale-border' : ''
 }))
 
+const headBorderColor = computed(() => (selectedRobot.value.head.onSale ? 'red' : '#aaa'))
+
 onMounted(() => {
   console.log('onMount executed')
 })
@@ -166,9 +168,10 @@ const selectPreviousBase = () => {
   border: 3px solid #aaa;
 }
 
-.sale-border {
-  border: 3px solid red;
+.top.part {
+  border: 3px solid v-bind(headBorderColor);
 }
+
 
 .part img {
   width: 200px;
