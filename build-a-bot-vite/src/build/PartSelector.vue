@@ -8,36 +8,39 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
 
-const props = defineProps(['parts', 'position']);
-const selectedPartIndex = ref(0);
-const selectedPart = computed(() => props.parts[selectedPartIndex.value]);
+const props = defineProps({
+  parts: { type: Array, required: true },
+  position: {
+    type: String,
+    required: true,
+    validator: function (value) {
+      ;['left', 'right', 'top', 'center', 'bottom'].includes(value)
+    }
+  }
+})
+const selectedPartIndex = ref(0)
+const selectedPart = computed(() => props.parts[selectedPartIndex.value])
 
 function getPreviousValidIndex(index, length) {
-  const deprecatedIndex = index - 1;
-  return deprecatedIndex < 0 ? length - 1 : deprecatedIndex;
+  const deprecatedIndex = index - 1
+  return deprecatedIndex < 0 ? length - 1 : deprecatedIndex
 }
 
 function getNextValidIndex(index, length) {
-  const incrementedIndex = index + 1;
-  return incrementedIndex > length - 1 ? 0 : incrementedIndex;
+  const incrementedIndex = index + 1
+  return incrementedIndex > length - 1 ? 0 : incrementedIndex
 }
 
 const selectNextPart = () => {
-  selectedPartIndex.value = getNextValidIndex(
-    selectedPartIndex.value,
-    props.parts.length,
-  );
-  console.log(selectedPart.value);
-};
+  selectedPartIndex.value = getNextValidIndex(selectedPartIndex.value, props.parts.length)
+  console.log(selectedPart.value)
+}
 
 const selectPreviousPart = () => {
-  selectedPartIndex.value = getPreviousValidIndex(
-    selectedPartIndex.value,
-    props.parts.length,
-  );
-};
+  selectedPartIndex.value = getPreviousValidIndex(selectedPartIndex.value, props.parts.length)
+}
 </script>
 
 <style scoped>
@@ -116,24 +119,24 @@ const selectPreviousPart = () => {
 
 .left .prev-selector:after,
 .right .prev-selector:after {
-  content: '\25B2'
+  content: '\25B2';
 }
 
 .left .next-selector:after,
 .right .next-selector:after {
-  content: '\25BC'
+  content: '\25BC';
 }
 
 .top .prev-selector:after,
 .bottom .prev-selector:after,
 .center .prev-selector:after {
-  content: '\25C4'
+  content: '\25C4';
 }
 
 .top .next-selector:after,
 .bottom .next-selector:after,
 .center .next-selector:after {
-  content: '\25BA'
+  content: '\25BA';
 }
 
 .center .prev-selector,
