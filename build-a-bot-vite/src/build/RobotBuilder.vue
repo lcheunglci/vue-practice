@@ -9,35 +9,17 @@
               {{ selectedRobot.head.title }}
               <span v-if="selectedRobot.head.onSale" class="sale">Sale!</span>
             </div>
-            <img :src="selectedRobot.head.imageUrl" alt="head" />
-            <button @click="selectPreviousHead()" class="prev-selector">&#9668;</button>
-            <button @click="selectNextHead()" class="next-selector">&#9658;</button>
+            <PartSelector :parts="availableParts.heads" position="top" />
           </div>
         </div>
       </div>
       <div class="middle-row">
-        <div class="left part">
-          <img :src="selectedRobot.leftArm.imageUrl" alt="left arm" />
-          <button @click="selectPreviousLeftArm()" class="prev-selector">&#9650;</button>
-          <button @click="selectNextLeftArm()" class="next-selector">&#9660;</button>
-        </div>
-        <div class="center part">
-          <img :src="selectedRobot.torso.imageUrl" alt="torso" />
-          <button @click="selectPreviousTorso()" class="prev-selector">&#9668;</button>
-          <button @click="selectNextTorso()" class="next-selector">&#9658;</button>
-        </div>
-        <div class="right part">
-          <img :src="selectedRobot.rightArm.imageUrl" alt="right arm" />
-          <button @click="selectPreviousRightArm()" class="prev-selector">&#9650;</button>
-          <button @click="selectNextRightArm()" class="next-selector">&#9660;</button>
-        </div>
+        <PartSelector :parts="availableParts.arms" position="left" />
+        <PartSelector :parts="availableParts.torsos" position="center" />
+        <PartSelector :parts="availableParts.arms" position="right" />
       </div>
       <div class="bottom-row">
-        <div class="bottom part">
-          <img :src="selectedRobot.base.imageUrl" alt="base" />
-          <button @click="selectPreviousBase()" class="prev-selector">&#9668;</button>
-          <button @click="selectNextBase()" class="next-selector">&#9658;</button>
-        </div>
+        <PartSelector :parts="availableParts.bases" position="bottom" />
       </div>
     </div>
     <div>
@@ -65,6 +47,7 @@
 import { computed, ref, onMounted } from 'vue'
 import parts from '../data/parts'
 import { toCurrency } from '../shared/formatters'
+import PartSelector from './PartSelector.vue'
 
 const getNextValidIndex = (index, length) => {
   const incrementedIndex = index + 1
