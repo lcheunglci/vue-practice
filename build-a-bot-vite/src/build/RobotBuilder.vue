@@ -3,22 +3,24 @@
     <div>
       <div class="content">
         <div class="preview">
-          <div class="preview-content">
-            <div class="top-row">
-              <img :src="selectedRobot.head.imageUrl" />
+          <CollapsibleSection>
+            <div class="preview-content">
+              <div class="top-row">
+                <img :src="selectedRobot.head.imageUrl" />
+              </div>
+              <div class="middle-row">
+                <img :src="selectedRobot.leftArm.imageUrl" class="rotate-left" />
+                <img :src="selectedRobot.torso.imageUrl" />
+                <img :src="selectedRobot.rightArm.imageUrl" class="rotate-right" />
+              </div>
+              <div class="bottom-row">
+                <img :src="selectedRobot.base.imageUrl" />
+              </div>
             </div>
-            <div class="middle-row">
-              <img :src="selectedRobot.leftArm.imageUrl" class="rotate-left" />
-              <img :src="selectedRobot.torso.imageUrl" />
-              <img :src="selectedRobot.rightArm.imageUrl" class="rotate-right" />
-            </div>
-            <div class="bottom-row">
-              <img :src="selectedRobot.base.imageUrl" />
-            </div>
-          </div>
+          </CollapsibleSection>
           <button class="add-to-cart" @click="addToCart()">Add to Cart</button>
         </div>
-        
+
         <div class="top-row">
           <div :class="[saleBorderClass, 'top', 'part']">
             <div class="robot-name">
@@ -84,6 +86,7 @@ import { computed, ref, onMounted } from 'vue'
 import parts from '../data/parts'
 import { toCurrency } from '../shared/formatters'
 import PartSelector from './PartSelector.vue'
+import CollapsibleSection from '../shared/CollapsibleSection.vue'
 
 const getNextValidIndex = (index, length) => {
   const incrementedIndex = index + 1
