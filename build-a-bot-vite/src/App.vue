@@ -9,24 +9,15 @@
     </nav>
   </header>
   <main>
-    <RobotBuilder />
-    <!--<ProductSearch /> -->
+    <router-view />
   </main>
 </template>
 
-<script>
-// import HomePage from './home/HomePage.vue'
-import RobotBuilder from './build/RobotBuilder.vue'
-// import ProductSearch from './search/ProductSearch.vue';
-export default {
-  name: 'App',
-  components: {
-    RobotBuilder,
-    data() {
-      return {}
-    }
-  }
-}
+<script setup>
+import { ref, provide } from 'vue'
+
+const userName = ref('Bob')
+provide('userName', userName)
 </script>
 
 <style>
