@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onUpdated } from 'vue'
 
 const props = defineProps({
   parts: { type: Array, required: true },
@@ -22,10 +22,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['partSelected'])
+
 const selectedPartIndex = ref(0)
 const selectedPart = computed(() => props.parts[selectedPartIndex.value])
 
 emit('partSelected', selectedPart)
+onUpdated(() => emit('partSelected', selectedPart));
+
 
 function getPreviousValidIndex(index, length) {
   const deprecatedIndex = index - 1
@@ -39,13 +42,10 @@ function getNextValidIndex(index, length) {
 
 const selectNextPart = () => {
   selectedPartIndex.value = getNextValidIndex(selectedPartIndex.value, props.parts.length)
-  emit('partSelected', selectedPart)
-  console.log(selectedPart.value)
 }
 
 const selectPreviousPart = () => {
   selectedPartIndex.value = getPreviousValidIndex(selectedPartIndex.value, props.parts.length)
-  emit('partSelected', selectedPart)
 }
 </script>
 
