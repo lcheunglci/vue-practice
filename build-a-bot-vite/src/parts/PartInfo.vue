@@ -9,13 +9,11 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
 import parts from '../data/parts';
 
+const props = definedProps(['partType', 'id']);
+
 const part = computed(() => {
-  const route = useRoute();
-  const partType = route.params.partType;
-  const partId = route.params.id;
-  return parts[partType].find((part) => part.id === +partId);
+  return parts[props.partType].find((part) => part.id === +props.id);
 });
 </script>
