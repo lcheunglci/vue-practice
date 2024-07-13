@@ -1,6 +1,9 @@
 <template>
   <div class="part" :class="position">
-    <img :src="selectedPart.imageUrl" alt="part" />
+    <router-link
+      :to="{ name: 'Parts', params: { partType: selectedPart.type, id: selectedPart.id } }"
+      ><img :src="selectedPart.imageUrl" alt="part"
+    /></router-link>
     <button @click="selectPreviousPart()" class="prev-selector"></button>
     <button @click="selectNextPart()" class="next-selector"></button>
     <span class="sale" v-show="selectedPart.onSale">Sale!</span>
@@ -27,8 +30,7 @@ const selectedPartIndex = ref(0)
 const selectedPart = computed(() => props.parts[selectedPartIndex.value])
 
 emit('partSelected', selectedPart)
-onUpdated(() => emit('partSelected', selectedPart));
-
+onUpdated(() => emit('partSelected', selectedPart))
 
 function getPreviousValidIndex(index, length) {
   const deprecatedIndex = index - 1
