@@ -3,8 +3,18 @@
     <nav>
       <ul>
         <li class="nav-item">
-          <router-link :to="{name: 'Home'}" class="nav-link">
+          <router-link :to="{name: 'Home'}" class="nav-link" active-class="home-active">
             <img src="./assets/build-a-bot-logo.png" alt="logo" class="logo" />
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <router-link :to="{name: 'Build'}" class="nav-link">
+            Build
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <router-link :to="{name: 'Search'}" class="nav-link">
+            Search
           </router-link>
         </li>
       </ul>
@@ -68,5 +78,14 @@ ul {
 .logo {
   vertical-align: middle;
   height: 30px;
+}
+
+.active-link {
+  color: white;
+}
+
+.home-active {
+  color: white;
+  text-shadow: 2px 2px black;
 }
 </style>

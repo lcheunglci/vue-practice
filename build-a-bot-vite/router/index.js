@@ -4,6 +4,7 @@ import ProductSearch from "@/search/ProductSearch.vue";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 export default createRouter({
+  linkActiveClass: 'active-link',
   history: createWebHashHistory(),
   routes: [
     {
