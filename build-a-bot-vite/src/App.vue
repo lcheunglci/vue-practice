@@ -3,19 +3,18 @@
     <nav>
       <ul>
         <li class="nav-item">
-          <router-link :to="{name: 'Home'}" class="nav-link" active-class="home-active">
+          <router-link :to="{ name: 'Home' }" class="nav-link" active-class="home-active">
             <img src="./assets/build-a-bot-logo.png" alt="logo" class="logo" />
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link :to="{name: 'Build'}" class="nav-link">
-            Build
-          </router-link>
+          <router-link :to="{ name: 'Build' }" class="nav-link"> Build </router-link>
         </li>
         <li class="nav-item">
-          <router-link :to="{name: 'Search'}" class="nav-link">
-            Search
-          </router-link>
+          <router-link :to="{ name: 'Search' }" class="nav-link"> Search </router-link>
+        </li>
+        <li class="nav-item cart">
+          <router-link to="/cart" class="nav-link"> Cart </router-link>
         </li>
       </ul>
     </nav>
@@ -26,10 +25,10 @@
 </template>
 
 <script setup>
-import { ref, provide } from 'vue'
+import { ref, provide } from 'vue';
 
-const userName = ref('Bob')
-provide('userName', userName)
+const userName = ref('Bob');
+provide('userName', userName);
 </script>
 
 <style>
@@ -65,7 +64,6 @@ ul {
 .nav-link {
   text-decoration: none;
   color: inherit;
-  ;
 }
 
 .nav-item {
@@ -73,6 +71,12 @@ ul {
   padding: 5px 10px;
   font-size: 22px;
   border-right: 1px solid #bbb;
+}
+
+.nav-item.cart {
+  position: relative;
+  margin-left: auto;
+  border-right: none;
 }
 
 .logo {

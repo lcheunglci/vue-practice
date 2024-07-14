@@ -62,33 +62,18 @@
         />
       </div>
     </div>
-    <div>
-      <h1>Cart</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Robot</th>
-            <th class="cost">Cost</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="(robot, index) in cart" :key="index">
-            <td>{{ robot.head.title }}</td>
-            <td class="cost">{{ toCurrency(robot.cost) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import parts from '../data/parts'
-import { toCurrency } from '../shared/formatters'
 import PartSelector from './PartSelector.vue'
 import CollapsibleSection from '../shared/CollapsibleSection.vue'
+
+import { useCartStore } from '../stores/cartStore';
+
+const cartStore = useCartStore();
 
 const getNextValidIndex = (index, length) => {
   const incrementedIndex = index + 1
@@ -106,7 +91,6 @@ const selectedLeftArmIndex = ref(0)
 const selectedRightArmIndex = ref(0)
 const selectedTorsoIndex = ref(0)
 const selectedBaseIndex = ref(0)
-const cart = ref([])
 
 const saleBorderClass = computed(() => ({
   border: selectedRobot.head.onSale ? 'sale-border' : ''
@@ -130,8 +114,7 @@ const addToCart = () => {
   const robot = selectedRobot.value
   const cost =
     robot.head.cost + robot.leftArm.cost + robot.torso.cost + robot.rightArm.cost + robot.base.cost
-  cart.value.push({ ...robot, cost })
-  console.log(cart.length)
+  cartStore.cart.push({ ...robot, cost })
 }
 // #region Part Selector Method
 
