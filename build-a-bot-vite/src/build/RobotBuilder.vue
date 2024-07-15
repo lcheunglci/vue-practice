@@ -62,45 +62,49 @@
         />
       </div>
     </div>
+    <h3>Last Robot Cost: {{ cartStore.lastRobotCost }}</h3>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import parts from '../data/parts'
-import PartSelector from './PartSelector.vue'
-import CollapsibleSection from '../shared/CollapsibleSection.vue'
+import { computed, ref, onMounted } from 'vue';
+import parts from '../data/parts';
+import PartSelector from './PartSelector.vue';
+import CollapsibleSection from '../shared/CollapsibleSection.vue';
 
 import { useCartStore } from '../stores/cartStore';
+import { storeToRefs } from 'pinia';
 
-const cartStore = useCartStore();
+const {cart, lastRobotCost} = storeToRefs(useCartStore());
+// let cart = cartStore.cart;
+//let lastRobotCost = cartStore.lastRobotCost;
 
 const getNextValidIndex = (index, length) => {
-  const incrementedIndex = index + 1
-  return incrementedIndex > length - 1 ? 0 : incrementedIndex
-}
+  const incrementedIndex = index + 1;
+  return incrementedIndex > length - 1 ? 0 : incrementedIndex;
+};
 
 const getPreviousValidIndex = (index, length) => {
-  const decrementIndex = index - 1
-  return decrementIndex < 0 ? length - 1 : decrementIndex
-}
+  const decrementIndex = index - 1;
+  return decrementIndex < 0 ? length - 1 : decrementIndex;
+};
 
-const availableParts = parts
-const selectedHeadIndex = ref(0)
-const selectedLeftArmIndex = ref(0)
-const selectedRightArmIndex = ref(0)
-const selectedTorsoIndex = ref(0)
-const selectedBaseIndex = ref(0)
+const availableParts = parts;
+const selectedHeadIndex = ref(0);
+const selectedLeftArmIndex = ref(0);
+const selectedRightArmIndex = ref(0);
+const selectedTorsoIndex = ref(0);
+const selectedBaseIndex = ref(0);
 
 const saleBorderClass = computed(() => ({
   border: selectedRobot.head.onSale ? 'sale-border' : ''
-}))
+}));
 
-const headBorderColor = computed(() => (selectedRobot.value.head.onSale ? 'red' : '#aaa'))
+const headBorderColor = computed(() => (selectedRobot.value.head.onSale ? 'red' : '#aaa'));
 
 onMounted(() => {
-  console.log('onMount executed')
-})
+  console.log('onMount executed');
+});
 
 const selectedRobot = computed(() => ({
   head: availableParts.heads[selectedHeadIndex.value],
@@ -108,62 +112,66 @@ const selectedRobot = computed(() => ({
   torso: availableParts.torsos[selectedTorsoIndex.value],
   rightArm: availableParts.arms[selectedRightArmIndex.value],
   base: availableParts.bases[selectedBaseIndex.value]
-}))
+}));
 
 const addToCart = () => {
-  const robot = selectedRobot.value
+  const robot = selectedRobot.value;
   const cost =
-    robot.head.cost + robot.leftArm.cost + robot.torso.cost + robot.rightArm.cost + robot.base.cost
-  cartStore.cart.push({ ...robot, cost })
-}
+    robot.head.cost + robot.leftArm.cost + robot.torso.cost + robot.rightArm.cost + robot.base.cost;
+  car.value.push({ ...robot, cost });
+  lastRobotCost.value = cost;
+};
 // #region Part Selector Method
 
 const selectNextHead = () => {
-  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.heads.length)
-}
+  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.heads.length);
+};
 const selectPreviousHead = () => {
   selectedHeadIndex.value = getPreviousValidIndex(
     selectedHeadIndex.value,
     availableParts.heads.length
-  )
-}
+  );
+};
 const selectNextLeftArm = () => {
-  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.arms.length)
-}
+  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.arms.length);
+};
 const selectPreviousLeftArm = () => {
   selectedHeadIndex.value = getPreviousValidIndex(
     selectedHeadIndex.value,
     availableParts.arms.length
-  )
-}
+  );
+};
 const selectNextRightArm = () => {
-  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.arms.length)
-}
+  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.arms.length);
+};
 const selectPreviousRightArm = () => {
   selectedHeadIndex.value = getPreviousValidIndex(
     selectedHeadIndex.value,
     availableParts.arms.length
-  )
-}
+  );
+};
 const selectNextTorso = () => {
-  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.torsos.length)
-}
+  selectedHeadIndex.value = getNextValidIndex(
+    selectedHeadIndex.value,
+    availableParts.torsos.length
+  );
+};
 const selectPreviousTorso = () => {
   selectedHeadIndex.value = getPreviousValidIndex(
     selectedHeadIndex.value,
     availableParts.torsos.length
-  )
-}
+  );
+};
 const selectNextBase = () => {
-  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.bases.length)
-}
+  selectedHeadIndex.value = getNextValidIndex(selectedHeadIndex.value, availableParts.bases.length);
+};
 
 const selectPreviousBase = () => {
   selectedHeadIndex.value = getPreviousValidIndex(
     selectedHeadIndex.value,
     availableParts.bases.length
-  )
-}
+  );
+};
 // #endregion
 </script>
 

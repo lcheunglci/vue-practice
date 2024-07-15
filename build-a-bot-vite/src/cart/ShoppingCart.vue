@@ -17,6 +17,7 @@
         </tr>
       </tbody>
     </table>
+    <h3>Last Robot Cost: {{ cartStore.lastRobotCost }}</h3>
   </div>
 </template>
 
