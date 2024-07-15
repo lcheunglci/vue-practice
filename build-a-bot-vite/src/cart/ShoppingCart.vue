@@ -16,6 +16,7 @@
           </td>
         </tr>
       </tbody>
+      <tr class="total"></tr>
     </table>
     <h3>Last Robot Cost: {{ cartStore.lastRobotCost }}</h3>
   </div>
@@ -48,5 +49,9 @@ th {
 }
 .cost {
   text-align: right;
+}
+
+.total {
+  font-weight: bold;
 }
 </style>
