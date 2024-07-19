@@ -19,7 +19,6 @@
 
 <script setup>
 import { computed, ref, onUpdated } from 'vue';
-import vPin from '../shared/pin-directive';
 
 const pinPadding = ref('10px');
 
