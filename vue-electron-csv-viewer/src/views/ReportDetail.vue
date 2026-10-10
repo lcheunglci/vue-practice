@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid style="margin-top: 50px">
     <v-progress-circular v-if="loading" indeterminate color="primary" class="my-5" />
 
     <v-alert v-else-if="error" type="error" variant="tonal" class="mb-4">{{ error }}</v-alert>

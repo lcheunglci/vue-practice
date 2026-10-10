@@ -10,18 +10,20 @@
         <v-alert v-if="error" type="error" variant="tonal" class="mb-4">{{ error }}</v-alert>
 
         <v-form>
-          <v-text-field
-            label="CSV file"
-            v-model="selectedFile"
-            readonly
-            prepend-inner-icon="mdi-file-document"
-            :placeholder="selectedFile ? selectedFile : 'No file selected'"
-            class="mb-2"
-          >
-            <template #append>
-              <v-btn icon="mdi-folder-open" variant="text" @click="pickFile" :loading="picking" />
-            </template>
-          </v-text-field>
+          <div class="d-flex align-center gap-2 mb-3">
+            <v-text-field
+              label="CSV file"
+              v-model="selectedFile"
+              readonly
+              prepend-inner-icon="mdi-file-document"
+              :placeholder="selectedFile ? selectedFile : 'No file selected'"
+              hide-details
+              class="flex-grow-1"
+            />
+            <v-btn color="primary" variant="outlined" @click="pickFile" :loading="picking">
+              Choose file
+            </v-btn>
+          </div>
 
           <v-text-field
             id="report-name"
