@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid style="margin-top: 50px">
     <v-row class="mb-4" align="center" justify="space-between">
       <v-col>
         <h1 class="text-h3 mb-1">All reports</h1>

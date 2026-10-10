@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid style="margin-top: 50px">
     <h2 class="text-h3 mb-3">Export</h2>
 
     <v-alert v-if="message" :type="isError ? 'error' : 'success'" variant="tonal" class="mb-4">
