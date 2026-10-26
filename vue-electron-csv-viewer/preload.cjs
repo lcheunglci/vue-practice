@@ -9,5 +9,8 @@ contextBridge.exposeInMainWorld('reportApi', {
   updateRow: (id, values) => ipcRenderer.invoke('report:update-row', { id, values }),
   deleteReport: (id) => ipcRenderer.invoke('report:delete', id),
   clearAllReports: () => ipcRenderer.invoke('report:clear'),
-  exportReport: (id, format) => ipcRenderer.invoke('report:export', { id, format })
+  exportReport: (id, format) => ipcRenderer.invoke('report:export', { id, format }),
+  onToggleTheme: (callback) => {
+    ipcRenderer.on('toggle-theme', (_event, payload) => callback(payload));
+  }
 });

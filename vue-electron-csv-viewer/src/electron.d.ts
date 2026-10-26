@@ -52,6 +52,7 @@ export interface ElectronReportApi {
   deleteReport(id: number): Promise<boolean>;
   clearAllReports(): Promise<number>;
   exportReport(id: number, format: ExportFormat): Promise<ExportResult>;
+  onToggleTheme(callback: (payload: { source: string }) => void): void;
 }
 
 declare global {

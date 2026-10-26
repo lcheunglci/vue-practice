@@ -1,4 +1,9 @@
-const { app, dialog, Menu } = require('electron');
+const { app, dialog, Menu, BrowserWindow } = require('electron');
+
+function toggleDarkMode() {
+  const win = BrowserWindow.getFocusedWindow();
+  if (win) win.webContents.send('toggle-theme', { source: 'menu' });
+}
 
 function showAbout() {
   dialog.showMessageBox({
@@ -14,6 +19,7 @@ function buildApplicationMenu() {
     {
       label: 'File',
       submenu: [
+        { label: 'Toggle Dark Mode', accelerator: 'CommandOrControl+Shift+D', click: toggleDarkMode },
         { role: 'quit' }
       ]
     },

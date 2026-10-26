@@ -12,14 +12,7 @@
           <v-list-item-subtitle class="small text-secondary">Electron + Vue</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item
-          to="/reports"
-          exact
-          append
-          class="nav-link"
-          active-class="active"
-          exact-active-class="active"
-        >
+        <v-list-item to="/reports" exact append class="nav-link" active-class="active" exact-active-class="active">
           <v-list-item-title class="text-white">All reports</v-list-item-title>
         </v-list-item>
 
@@ -37,4 +30,16 @@
 
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { useTheme } from 'vuetify'
+import { onMounted } from 'vue'
+
+const theme = useTheme()
+
+function toggleTheme() {
+  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+}
+
+onMounted(() => {
+  window.reportApi?.onToggleTheme?.(() => toggleTheme())
+})
 </script>
