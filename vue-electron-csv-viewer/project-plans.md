@@ -115,9 +115,13 @@ npm run electron:build
 - ESM preload scripts must have `.mjs` extension (we use CJS preload, which is acceptable)
 - Electron's `main` process uses CJS for compatibility; named ESM imports work via Electron's patched loader
 
-## 9.2 Next Steps
-1. Verify Electron menu item works: `npm run electron:dev` → open app → File → Toggle Dark Mode → toggle theme
-2. Verify Vue UI updates immediately after menu click
-3. Test dark mode toggle across all views
+## 9.2 Next Steps (Completed)
+1. ✅ Theme toggle via Electron File menu verified (`npm run electron:dev`)
+2. ✅ Dark/light switch works both directions (fixed `theme.change()` + local `isDark` ref)
+3. ✅ File picker (`AddReportDialog.vue`) opens dialog correctly
+4. ✅ Layout overlaps fixed (container margins + v-main padding)
+5. ✅ Total row separated from table footer (`ReportDetail.vue`)
+6. ✅ Dev server stops Vite when Electron exits (`scripts/dev-electron.mjs`)
+7. ✅ Build passes (`npm run build`)
 
 Let me know if you need further adjustments!

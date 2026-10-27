@@ -88,13 +88,11 @@
           </tr>
         </template>
 
-        <template #footer.prepend v-if="report.rows.length > 0">
-          <tr>
-            <td colspan="4" class="text-end">Total</td>
-            <td colspan="2" class="text-end"><strong>{{ formatCurrency(totalCost) }}</strong></td>
-          </tr>
-        </template>
       </v-data-table>
+
+      <v-row v-if="report.rows.length > 0" class="mt-2 justify-end align-center" style="gap: 8px">
+        <div class="text-end font-weight-bold">Total {{ formatCurrency(totalCost) }}</div>
+      </v-row>
 
       <v-spacer class="my-4"></v-spacer>
       <v-btn variant="text" @click="goBack">Back</v-btn>

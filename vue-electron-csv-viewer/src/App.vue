@@ -1,23 +1,23 @@
 <template>
   <v-app class="h-screen">
-    <v-app-bar app color="dark" elevation="1">
-      <v-toolbar-title class="text-white">Reports Insight</v-toolbar-title>
+    <v-app-bar app :color="themeColor" elevation="1">
+      <v-toolbar-title :class="textColor">Reports Insight</v-toolbar-title>
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-navigation-drawer app permanent color="dark" width="240">
-      <v-list class="bg-dark">
+    <v-navigation-drawer app permanent :color="themeColor" width="240">
+      <v-list :class="drawerListClass">
         <v-list-item class="px-3 py-3">
-          <v-list-item-title class="text-white h5 mb-1">Reports Insight</v-list-item-title>
-          <v-list-item-subtitle class="small text-secondary">Electron + Vue</v-list-item-subtitle>
+          <v-list-item-title class="h5 mb-1" :class="textColor">Reports Insight</v-list-item-title>
+          <v-list-item-subtitle class="small">Electron + Vue</v-list-item-subtitle>
         </v-list-item>
 
         <v-list-item to="/reports" exact append class="nav-link" active-class="active" exact-active-class="active">
-          <v-list-item-title class="text-white">All reports</v-list-item-title>
+          <v-list-item-title :class="navTextColor">All reports</v-list-item-title>
         </v-list-item>
 
         <v-list-item to="/export" exact append class="nav-link" active-class="active">
-          <v-list-item-title class="text-white">Export</v-list-item-title>
+          <v-list-item-title :class="navTextColor">Export</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -31,12 +31,24 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import { useTheme } from 'vuetify'
-import { onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 const theme = useTheme()
 
+// Use a local ref instead of relying on theme.global.current.value.dark
+const isDark = ref(true)
+
+const themeColor = computed(() => isDark.value ? 'dark' : 'white')
+
+const textColor = computed(() => isDark.value ? 'text-white' : 'text-dark')
+
+const drawerListClass = computed(() => isDark.value ? 'bg-dark' : 'bg-white')
+
+const navTextColor = computed(() => isDark.value ? 'text-white' : 'text-dark')
+
 function toggleTheme() {
-  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+  isDark.value = !isDark.value
+  theme.change(isDark.value ? 'dark' : 'light')
 }
 
 onMounted(() => {
