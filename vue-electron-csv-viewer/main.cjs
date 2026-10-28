@@ -49,11 +49,29 @@ function createWindow() {
     }
   });
 
+  const splashPath = path.join(__dirname, 'splash.html');
   if (DEV_URL) {
-    win.loadURL(DEV_URL);
+    win.loadFile(splashPath);
+    win.webContents.on('did-finish-load', () => {
+      const tryLoad = () => {
+        const req = require('http').get(DEV_URL, (res) => {
+          if (res.statusCode === 200 || res.statusCode === 304) {
+            win.loadURL(DEV_URL);
+          } else {
+            setTimeout(tryLoad, 300);
+          }
+        });
+        req.on('error', () => setTimeout(tryLoad, 300));
+        req.setTimeout(2000, () => req.destroy());
+      };
+      setTimeout(tryLoad, 200);
+    });
     win.webContents.openDevTools();
   } else {
-    win.loadFile(PROD_INDEX);
+    win.loadFile(splashPath);
+    win.webContents.on('did-finish-load', () => {
+      setTimeout(() => win.loadFile(PROD_INDEX), 400);
+    });
   }
 }
 
