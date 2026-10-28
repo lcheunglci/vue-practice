@@ -53,5 +53,6 @@ function toggleTheme() {
 
 onMounted(() => {
   window.reportApi?.onToggleTheme?.(() => toggleTheme())
+  window.reportApi?.logError?.('info', 'App initialized via Electron')
 })
 </script>

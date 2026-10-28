@@ -1,8 +1,14 @@
-const { app, dialog, Menu, BrowserWindow } = require('electron');
+const { app, dialog, Menu, BrowserWindow, shell } = require('electron');
+const path = require('path');
 
 function toggleDarkMode() {
   const win = BrowserWindow.getFocusedWindow();
   if (win) win.webContents.send('toggle-theme', { source: 'menu' });
+}
+
+function showLogFile() {
+  const logFile = path.join(app.getPath('userData'), 'renderer.log');
+  shell.openPath(logFile);
 }
 
 function showAbout() {
@@ -20,6 +26,7 @@ function buildApplicationMenu() {
       label: 'File',
       submenu: [
         { label: 'Toggle Dark Mode', accelerator: 'CommandOrControl+Shift+D', click: toggleDarkMode },
+        { label: 'Show Log File', click: showLogFile },
         { role: 'quit' }
       ]
     },

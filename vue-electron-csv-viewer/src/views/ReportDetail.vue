@@ -148,6 +148,7 @@ async function load() {
     }
   } catch (err) {
     error.value = String(err)
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'load', reportId: id })
   } finally {
     loading.value = false
   }

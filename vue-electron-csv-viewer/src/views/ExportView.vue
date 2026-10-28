@@ -75,6 +75,7 @@ async function loadReports() {
     }
   } catch (err) {
     showError(String(err))
+    window.reportApi?.logError?.('error', String(err), { component: 'ExportView.vue', action: 'loadReports' })
   } finally {
     loading.value = false
   }

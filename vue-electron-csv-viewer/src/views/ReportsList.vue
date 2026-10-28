@@ -115,6 +115,7 @@ async function remove(report: ReportSummary) {
     refresh()
   } catch (err) {
     error.value = String(err)
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportsList.vue', action: 'remove' })
   }
 }
 

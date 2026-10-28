@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const { app, BrowserWindow, dialog, ipcMain, Menu } = require('electron');
 const {
   openDb,
@@ -23,6 +24,19 @@ const PROD_INDEX = path.join(
 );
 
 let db;
+
+const LOG_FILE = path.join(app.getPath('userData'), 'renderer.log');
+
+function logToRenderer(message, level = 'error', context = {}) {
+  const entry = {
+    timestamp: new Date().toISOString(),
+    level,
+    message,
+    context
+  };
+  const line = JSON.stringify(entry) + '\n';
+  fs.appendFileSync(LOG_FILE, line, { encoding: 'utf8' });
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -93,6 +107,11 @@ function registerIpc() {
       return exportRowsToJson(db, id, result.filePath);
     }
     return exportRowsToSpreadsheet(db, id, result.filePath, format);
+  });
+
+  ipcMain.handle('renderer:log', (_event, { level, message, context }) => {
+    logToRenderer(message, level, context);
+    return { logged: true };
   });
 }
 

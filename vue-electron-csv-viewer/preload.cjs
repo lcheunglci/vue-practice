@@ -12,5 +12,8 @@ contextBridge.exposeInMainWorld('reportApi', {
   exportReport: (id, format) => ipcRenderer.invoke('report:export', { id, format }),
   onToggleTheme: (callback) => {
     ipcRenderer.on('toggle-theme', (_event, payload) => callback(payload));
+  },
+  logError: (level, message, context) => {
+    ipcRenderer.invoke('renderer:log', { level, message, context });
   }
 });
