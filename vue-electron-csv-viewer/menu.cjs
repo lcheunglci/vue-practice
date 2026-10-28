@@ -8,7 +8,7 @@ function toggleDarkMode() {
 
 function showLogFile() {
   const logFile = path.join(app.getPath('userData'), 'renderer.log');
-  shell.openPath(logFile);
+  shell.showItemInFolder(logFile);
 }
 
 function showAbout() {
