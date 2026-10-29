@@ -42,6 +42,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 820,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -51,27 +52,34 @@ function createWindow() {
 
   const splashPath = path.join(__dirname, 'splash.html');
   if (DEV_URL) {
-    win.loadFile(splashPath);
-    win.webContents.on('did-finish-load', () => {
-      // Poll until Vite is ready, then navigate
+    const req = require('http').get(DEV_URL, () => {
+      win.loadURL(DEV_URL);
+      win.webContents.on('dom-ready', () => {
+        win.show();
+        win.webContents.openDevTools();
+      });
+    });
+    req.on('error', () => {
+      // Vite not ready yet; poll
       const tryLoad = () => {
-        const req = require('http').get(DEV_URL, (res) => {
-          if (res.statusCode === 200 || res.statusCode === 304) {
-            win.loadURL(DEV_URL);
+        const r = require('http').get(DEV_URL, () => {
+          win.loadURL(DEV_URL);
+          win.webContents.on('dom-ready', () => {
+            win.show();
             win.webContents.openDevTools();
-          } else {
-            setTimeout(tryLoad, 300);
-          }
+          });
         });
-        req.on('error', () => setTimeout(tryLoad, 300));
-        req.setTimeout(2000, () => req.destroy());
+        r.on('error', () => setTimeout(tryLoad, 300));
       };
-      setTimeout(tryLoad, 100);
+      setTimeout(tryLoad, 200);
     });
   } else {
     win.loadFile(splashPath);
-    win.webContents.on('did-finish-load', () => {
+    win.webContents.on('dom-ready', () => {
       win.loadFile(PROD_INDEX);
+      win.webContents.on('dom-ready', () => {
+        win.show();
+      });
     });
   }
 }
@@ -135,6 +143,12 @@ function registerIpc() {
 }
 
 app.whenReady().then(() => {
+  app.setAsDefaultProtocolClient('https');
+  app.setAsDefaultProtocolClient('http');
+  app.setAsDefaultProtocolClient('file');
+  app.commandLine.appendSwitch('disable-gpu-disk-cache');
+  app.commandLine.appendSwitch('disable-http-cache');
+
   const dbPath = path.join(app.getPath('userData'), 'reports.db');
   db = openDb(dbPath);
   registerIpc();
