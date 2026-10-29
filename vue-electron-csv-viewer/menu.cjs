@@ -14,8 +14,8 @@ function showLogFile() {
 function showAbout() {
   dialog.showMessageBox({
     type: 'info',
-    title: `About ${app.getName()}`,
-    message: app.getName(),
+    title: 'About Reports Insight',
+    message: 'Reports Insight',
     detail: `Version ${app.getVersion()}\nDesktop CSV report viewer built with Electron + Vue.`
   });
 }
