@@ -29,12 +29,18 @@
             </template>
           </v-select>
 
-          <v-label class="mb-2">Format</v-label>
-          <v-radio-group v-model="format" inline>
-            <v-radio v-for="fmt in formats" :key="fmt.value" :value="fmt.value" :label="fmt.label" />
-          </v-radio-group>
+          <v-select
+            v-model="format"
+            :items="formats"
+            item-title="label"
+            item-value="value"
+            label="Format"
+            variant="outlined"
+            density="compact"
+            class="mt-2"
+          />
 
-          <v-btn color="primary" @click="exportReport" :loading="exporting">
+          <v-btn color="primary" class="mt-2" @click="exportReport" :loading="exporting">
             {{ exporting ? 'Exporting…' : 'Export' }}
           </v-btn>
         </v-form>
