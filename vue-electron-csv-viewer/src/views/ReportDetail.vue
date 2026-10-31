@@ -52,9 +52,8 @@
         :headers="headers"
         :items="report.rows"
         :sort-by="[{ key: sortColumn, order: sortDirection }]"
+        @update:sort-by="(newSort: any) => { if (newSort && Array.isArray(newSort) && newSort[0]) { sortColumn = newSort[0].key; sortDirection = newSort[0].order; } else if (newSort && newSort.key) { sortColumn = newSort.key; sortDirection = newSort.order; } }"
         class="elevation-1"
-        disable-sort
-        disable-filtering
       >
         <template #item="{ item: row, index, props }">
           <tr v-bind="props">
@@ -126,10 +125,10 @@ const savingRowId = ref<number | null>(null)
 
 const headers = [
   { title: '#', key: '#', sortable: false },
-  { title: 'Date', key: 'date', sortable: false },
-  { title: 'Order ID', key: 'orderId', sortable: false },
-  { title: 'Description', key: 'description', sortable: false },
-  { title: 'Cost', key: 'cost', sortable: false },
+  { title: 'Date', key: 'date', sortable: true },
+  { title: 'Order ID', key: 'orderId', sortable: true },
+  { title: 'Description', key: 'description', sortable: true },
+  { title: 'Cost', key: 'cost', sortable: true },
   { title: 'Actions', key: 'actions', sortable: false }
 ]
 
