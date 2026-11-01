@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { reactive, ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { api, type RecipePayload, type Tag } from '../composables/api';
 
@@ -7,7 +7,7 @@ const router = useRouter();
 const route = useRoute();
 const isNew = computed(() => router.currentRoute.value.params.id === undefined);
 
-const form = ref<RecipePayload>({
+const form = reactive<RecipePayload>({
   title: '',
   description: '',
   ingredients: [],
@@ -17,24 +17,8 @@ const form = ref<RecipePayload>({
   servings: null,
 });
 
-// If editing, set initial form values
-if (!isNew) {
-  const route = useRoute();
-  const recipeId = Number(route.params.id);
-  api.recipes.get(recipeId).then(r => {
-    form.value = {
-      title: r.title,
-      description: r.description || '',
-      ingredients: r.ingredients || [],
-      instructions: r.instructions,
-      prepTime: r.prepTime || null,
-      cookTime: r.cookTime || null,
-      servings: r.servings || null,
-    };
-  });
-}
-
 const tags = ref<Tag[]>([]);
+const selectedTags = ref<number[]>([]);
 const loading = ref(false);
 
 async function loadTags() {
@@ -49,15 +33,64 @@ async function loadTags() {
 async function submit() {
   loading.value = true;
   try {
-    await api.recipes.create(form.value);
+    const payload = { ...form, ingredients: typeof form.ingredients === 'string' ? form.ingredients.split(/\n|,/).filter(Boolean) : form.ingredients };
+    if (isNew.value) {
+      await api.recipes.create(payload);
+    } else {
+      const id = Number(route.params.id);
+      await api.recipes.update(id, payload);
+    }
     router.push('/recipes');
   } finally {
     loading.value = false;
   }
 }
 
+watch(() => isNew.value, (newVal) => {
+  if (newVal) {
+    form.title = '';
+    form.description = '';
+    form.ingredients = '';
+    form.instructions = '';
+    form.prepTime = null;
+    form.cookTime = null;
+    form.servings = null;
+  }
+});
+
+watch(() => route.params.id, async (newId) => {
+  if (!isNew.value && newId) {
+    try {
+      const r = await api.recipes.get(Number(newId));
+      form.title = r.title || '';
+      form.description = r.description || '';
+      form.ingredients = Array.isArray(r.ingredients) ? r.ingredients.join('\n') : (r.ingredients || '');
+      form.instructions = r.instructions || '';
+      form.prepTime = r.prepTime !== null ? r.prepTime : null;
+      form.cookTime = r.cookTime !== null ? r.cookTime : null;
+      form.servings = r.servings !== null ? r.servings : null;
+    } catch (e) {
+      console.error('Failed to load recipe', e);
+    }
+  }
+});
+
 onMounted(async () => {
   await loadTags();
+  if (!isNew.value) {
+    try {
+      const r = await api.recipes.get(Number(route.params.id));
+      form.title = r.title || '';
+      form.description = r.description || '';
+      form.ingredients = Array.isArray(r.ingredients) ? r.ingredients.join('\n') : (r.ingredients || '');
+      form.instructions = r.instructions || '';
+      form.prepTime = r.prepTime !== null ? r.prepTime : null;
+      form.cookTime = r.cookTime !== null ? r.cookTime : null;
+      form.servings = r.servings !== null ? r.servings : null;
+    } catch (e) {
+      console.error('Failed to load recipe', e);
+    }
+  }
 });
 </script>
 
@@ -71,24 +104,25 @@ onMounted(async () => {
 
     <v-row class="mb-6">
       <v-col cols="12">
-        <v-form @submit.prevent="submit" :loading="loading" v-if="form && form.value">
-          <v-text-field v-model="form.value.title" label="Recipe Title" required />
-          <v-textarea v-model="form.value.description" label="Description" rows="3" variant="outlined" />
+        <v-form @submit.prevent="submit" :loading="loading">
+          <v-text-field v-model="form.title" label="Recipe Title" required />
+          <v-textarea v-model="form.description" label="Description" rows="3" variant="outlined" />
           
-          <v-select 
-            v-model="form.value.ingredients" 
-            :items="tags" 
-            item-title="name" 
-            item-value="id" 
+          <v-textarea v-model="form.ingredients" label="Ingredients (one per line or comma separated)" rows="3" variant="outlined" />
+          <v-select
+            v-model="selectedTags"
+            :items="tags"
+            item-title="name"
+            item-value="id"
             label="Tags (select categories)"
-            multiple 
-            chips 
-            clearable 
+            multiple
+            chips
+            clearable
             variant="outlined"
           />
           
           <v-text-field 
-            v-model="form.value.instructions" 
+            v-model="form.instructions" 
             label="Instructions" 
             required 
             rows="5" 
@@ -98,7 +132,7 @@ onMounted(async () => {
           <v-row class="g-2">
             <v-col cols="4" class="d-flex">
               <v-text-field 
-                v-model="form.value.prepTime" 
+                v-model="form.prepTime" 
                 label="Prep Time (minutes)" 
                 type="number" 
                 variant="outlined"
@@ -106,7 +140,7 @@ onMounted(async () => {
             </v-col>
             <v-col cols="4" class="d-flex">
               <v-text-field 
-                v-model="form.value.cookTime" 
+                v-model="form.cookTime" 
                 label="Cook Time (minutes)" 
                 type="number" 
                 variant="outlined"
@@ -114,7 +148,7 @@ onMounted(async () => {
             </v-col>
             <v-col cols="4" class="d-flex">
               <v-text-field 
-                v-model="form.value.servings" 
+                v-model="form.servings" 
                 label="Servings" 
                 type="number" 
                 variant="outlined"

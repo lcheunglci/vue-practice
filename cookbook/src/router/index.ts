@@ -24,6 +24,11 @@ const router = createRouter({
       component: RecipeForm,
     },
     {
+      path: '/recipes/edit/:id',
+      name: 'edit-recipe',
+      component: RecipeForm,
+    },
+    {
       path: '/recipes/:id',
       name: 'recipe',
       component: RecipeDetail,

@@ -34,7 +34,7 @@ watch(() => route.params.id, loadRecipe);
       <v-col cols="12" md="8" class="float-right">
         <v-btn to="/recipes" variant="outlined" class="mb-4">Back to Recipes</v-btn>
         <v-btn color="error" variant="text" class="mx-2" @click="deleteRecipe">Delete</v-btn>
-        <v-btn color="primary" :to="`/recipes/${route.params.id}`" variant="text">Edit</v-btn>
+        <v-btn color="primary" :to="`/recipes/edit/${route.params.id}`" variant="text">Edit</v-btn>
       </v-col>
     </v-row>
 
