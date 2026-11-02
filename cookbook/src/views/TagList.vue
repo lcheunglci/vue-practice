@@ -21,6 +21,14 @@ function deleteTag(id: number) {
   });
 }
 
+function editTag(tag: { id: number; name: string }) {
+  const newName = prompt('Rename tag:', tag.name);
+  if (!newName || newName === tag.name) return;
+  api.tags.update(tag.id, newName).then(() => {
+    tag.name = newName;
+  });
+}
+
 onMounted(loadTags);
 </script>
 
@@ -39,7 +47,10 @@ onMounted(loadTags);
       <v-col v-for="tag in tags" :key="tag.id" cols="12" md="6" lg="4">
         <v-card class="d-flex justify-space-between align-center p-4">
           <span>{{ tag.name }}</span>
-          <v-btn color="error" variant="text" size="small" @click="deleteTag(tag.id)">
+          <v-btn color="primary" variant="outlined" size="small" @click="editTag(tag)">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn color="error" variant="outlined" size="small" @click="deleteTag(tag.id)">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-card>

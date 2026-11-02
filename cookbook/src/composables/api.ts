@@ -57,6 +57,7 @@ export const api = {
   tags: {
     list: () => fetchApi<Tag[]>('/tags'),
     create: (name: string) => fetchApi<Tag>('/tags', { method: 'POST', body: JSON.stringify({ name }) }),
+    update: (id: number, name: string) => fetchApi<Tag>(`/tags/${id}`, { method: 'PUT', body: JSON.stringify({ name }) }),
     delete: (id: number) => fetchApi<{ success: boolean }>(`/tags/${id}`, { method: 'DELETE' }),
   },
 };
