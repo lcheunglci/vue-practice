@@ -15,7 +15,8 @@ const theme = useTheme();
 
 function toggleTheme() {
   isDark.value = !isDark.value;
-  theme.global.name.value = isDark.value ? 'dark' : 'light';
+  console.log('theme toggled to:', isDark.value ? 'dark' : 'light');
+  theme.change(isDark.value ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light');
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
 }
@@ -40,8 +41,8 @@ function toggleTheme() {
       <VIcon start>{{ item.icon }}</VIcon>
       {{ item.label }}
     </VBtn>
-    <VBtn variant="text" class="mx-2 text-white" @click="toggleTheme">
-      <VIcon start>{{ isDark.value ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</VIcon>
+    <VBtn variant="outlined" color="white" @click="toggleTheme" class="mx-2">
+      {{ isDark ? 'Light' : 'Dark' }}
     </VBtn>
   </VAppBar>
 </template>
