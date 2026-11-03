@@ -11,12 +11,13 @@ const initialTheme = savedTheme ? savedTheme : prefersDark ? 'dark' : 'light';
 
 const isDark = ref(initialTheme === 'dark');
 
+const theme = useTheme();
+
 function toggleTheme() {
-  const before = isDark.value;
-  isDark.value = !before;
-  const attr = document.documentElement.getAttribute('data-theme');
+  isDark.value = !isDark.value;
+  theme.global.name.value = isDark.value ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light');
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
-  console.log('before:', before, 'after:', isDark.value, 'attr:', attr);
 }
 </script>
 
