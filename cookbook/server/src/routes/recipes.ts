@@ -30,7 +30,11 @@ router.get('/', async (req, res) => {
   for (const recipe of recipes) {
     const tagRows = stmt.all(recipe.id);
     recipe.tags = tagRows.map(r => r.tagId);
-    recipe.ingredients = JSON.parse(recipe.ingredients || '[]');
+    try {
+      recipe.ingredients = JSON.parse(recipe.ingredients || '[]');
+    } catch {
+      recipe.ingredients = (recipe.ingredients || '').split(/\n|,/).filter((s: string) => s.trim() !== '');
+    }
   }
 
   res.json(recipes);
@@ -44,7 +48,11 @@ router.get('/:id', async (req, res) => {
   }
   const tagRows = db.prepare('SELECT tagId FROM recipe_tags WHERE recipeId = ?').all(recipe.id);
   recipe.tags = tagRows.map(r => r.tagId);
-  recipe.ingredients = JSON.parse(recipe.ingredients || '[]');
+  try {
+    recipe.ingredients = JSON.parse(recipe.ingredients || '[]');
+  } catch {
+    recipe.ingredients = (recipe.ingredients || '').split(/\n|,/).filter((s: string) => s.trim() !== '');
+  }
   res.json(recipe);
 });
 
@@ -55,7 +63,13 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Title and instructions are required' });
   }
 
-  const ingredientsJson = ingredients ? JSON.stringify(ingredients) : '[]';
+  let ingredientsArray: string[] = [];
+  if (typeof ingredients === 'string') {
+    ingredientsArray = ingredients.split(/\n|,/).map(s => s.trim()).filter(s => s !== '');
+  } else if (Array.isArray(ingredients)) {
+    ingredientsArray = ingredients;
+  }
+  const ingredientsJson = JSON.stringify(ingredientsArray);
   const result = db.prepare(
     'INSERT INTO recipes (title, description, ingredients, instructions, prepTime, cookTime, servings, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
   ).run(title, description, ingredientsJson, instructions, prepTime || null, cookTime || null, servings || null, Date.now());
@@ -76,9 +90,16 @@ router.post('/', async (req, res) => {
 
 // Update a recipe
 router.put('/:id', async (req, res) => {
-  const { title, description, ingredients, instructions, prepTime, cookTime, servings, tags = [] } = req.body;
+  let { title, description, ingredients, instructions, prepTime, cookTime, servings, tags = [] } = req.body;
+  // Handle ingredients as either array or newline-separated string
+  if (typeof ingredients === 'string') {
+    ingredients = ingredients.split(/\n|,/).map(s => s.trim()).filter(s => s !== '');
+  } else if (!Array.isArray(ingredients)) {
+    ingredients = [];
+  }
+  const ingredientsJson = JSON.stringify(ingredients || []);
   const query = 'UPDATE recipes SET title = ?, description = ?, ingredients = ?, instructions = ?, prepTime = ?, cookTime = ?, servings = ? WHERE id = ?';
-  const params = [title, description, ingredients, instructions, prepTime, cookTime, servings, req.params.id];
+  const params = [title, description, ingredientsJson, instructions, prepTime || null, cookTime || null, servings || null, req.params.id];
   const result = db.prepare(query).run(...params);
 
   if (result.changes === 0) {
