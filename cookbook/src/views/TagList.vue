@@ -45,14 +45,16 @@ onMounted(loadTags);
         <v-progress-circular indeterminate color="primary" />
       </v-col>
       <v-col v-for="tag in tags" :key="tag.id" cols="12" md="6" lg="4">
-        <v-card class="d-flex justify-space-between align-center p-4">
-          <span>{{ tag.name }}</span>
-          <v-btn color="primary" variant="outlined" size="small" @click="editTag(tag)">
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
-          <v-btn color="error" variant="outlined" size="small" @click="deleteTag(tag.id)">
-            <v-icon>mdi-delete</v-icon>
-          </v-btn>
+        <v-card class="d-flex justify-space-between align-center p-4" style="padding-left: 12px;">
+          <span style="flex-grow: 1;">{{ tag.name }}</span>
+          <div class="d-flex align-center gap-2">
+            <v-btn color="primary" variant="outlined" size="small" @click="editTag(tag)">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn color="error" variant="outlined" size="small" @click="deleteTag(tag.id)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </div>
         </v-card>
       </v-col>
     </v-row>
