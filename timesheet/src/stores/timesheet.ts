@@ -65,14 +65,20 @@ export const useTimesheetStore = defineStore('timesheet', () => {
     timesheet.value.weekStart = date
     const monday = new Date(date + 'T00:00:00')
     for (let i = 0; i < 5; i++) {
-      const day = new Date(monday)
-      day.setDate(monday.getDate() + i)
-      timesheet.value.days[i].date = toDateKey(day)
+      const dayEntry = timesheet.value.days[i]
+      if (dayEntry) {
+        const day = new Date(monday)
+        day.setDate(monday.getDate() + i)
+        dayEntry.date = toDateKey(day)
+      }
     }
   }
 
   const updateDay = (index: number, patch: Partial<DayEntry>) => {
-    timesheet.value.days[index] = { ...timesheet.value.days[index], ...patch }
+    const day = timesheet.value.days[index]
+    if (day) {
+      timesheet.value.days[index] = { ...day, ...patch }
+    }
   }
 
   const reset = () => {
@@ -96,8 +102,14 @@ export const useTimesheetStore = defineStore('timesheet', () => {
   const dailyHours = computed(() => {
     return timesheet.value.days.map((day) => {
       if (!day.clockIn || !day.clockOut) return 0
-      const [inH, inM] = day.clockIn.split(':').map(Number)
-      const [outH, outM] = day.clockOut.split(':').map(Number)
+      const inParts = day.clockIn.split(':')
+      const outParts = day.clockOut.split(':')
+      if (inParts.length !== 2 || outParts.length !== 2) return 0
+      const inH = Number(inParts[0])
+      const inM = Number(inParts[1])
+      const outH = Number(outParts[0])
+      const outM = Number(outParts[1])
+      if (isNaN(inH) || isNaN(inM) || isNaN(outH) || isNaN(outM)) return 0
       const minutesIn = inH * 60 + inM
       const minutesOut = outH * 60 + outM
       let worked = minutesOut - minutesIn - day.breakMinutes

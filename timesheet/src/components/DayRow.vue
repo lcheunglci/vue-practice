@@ -18,8 +18,14 @@ const dayName = computed(() => {
 
 const hours = computed(() => {
   if (!props.day.clockIn || !props.day.clockOut) return 0
-  const [inH, inM] = props.day.clockIn.split(':').map(Number)
-  const [outH, outM] = props.day.clockOut.split(':').map(Number)
+  const inParts = props.day.clockIn.split(':')
+  const outParts = props.day.clockOut.split(':')
+  if (inParts.length !== 2 || outParts.length !== 2) return 0
+  const inH = Number(inParts[0])
+  const inM = Number(inParts[1])
+  const outH = Number(outParts[0])
+  const outM = Number(outParts[1])
+  if (isNaN(inH) || isNaN(inM) || isNaN(outH) || isNaN(outM)) return 0
   const minutesIn = inH * 60 + inM
   const minutesOut = outH * 60 + outM
   let worked = minutesOut - minutesIn - props.day.breakMinutes
@@ -27,9 +33,13 @@ const hours = computed(() => {
   return Math.round((worked / 60) * 100) / 100
 })
 
+const projects = ['Project Alpha', 'Project Beta', 'Project Gamma', 'Other']
+
 function updateField(field: keyof DayEntry, value: string | number) {
   const day = store.timesheet.days[props.index]
-  store.timesheet.days[props.index] = { ...day, [field]: value }
+  if (day) {
+    store.timesheet.days[props.index] = { ...day, [field]: value }
+  }
 }
 </script>
 
@@ -38,45 +48,45 @@ function updateField(field: keyof DayEntry, value: string | number) {
     <v-row justify="space-between" align="center">
       <v-col cols="2">
         <v-select
-          v-model="props.day.project"
-          :items="['Project Alpha', 'Project Beta', 'Project Gamma', 'Other']"
+          :model-value="props.day.project"
+          :items="projects"
           label="Project"
           dense
-        >
-          <template #no-data>
-            <v-chip>No projects available</v-chip>
-          </template>
-        </v-select>
+          @update:model-value="updateField('project', $event)"
+        />
       </v-col>
       <v-col cols="2">
-        <v-text-field v-model="props.day.notes" label="Notes" dense></v-text-field>
+        <v-text-field :model-value="props.day.notes" label="Notes" dense @update:model-value="updateField('notes', $event)" />
       </v-col>
     </v-row>
 
     <v-row justify="space-between" align="center">
       <v-col cols="2">
         <v-text-field
-          v-model="props.day.clockIn"
+          :model-value="props.day.clockIn"
           type="time"
           label="Clock In"
           dense
-        ></v-text-field>
+          @update:model-value="updateField('clockIn', $event)"
+        />
       </v-col>
       <v-col cols="2">
         <v-text-field
-          v-model="props.day.clockOut"
+          :model-value="props.day.clockOut"
           type="time"
           label="Clock Out"
           dense
-        ></v-text-field>
+          @update:model-value="updateField('clockOut', $event)"
+        />
       </v-col>
       <v-col cols="2">
         <v-select
-          v-model="props.day.breakMinutes"
+          :model-value="props.day.breakMinutes"
           :items="[{ label: 30, value: 30 }, { label: 45, value: 45 }, { label: 60, value: 60 }]"
           label="Break (min)"
           dense
-        ></v-select>
+          @update:model-value="updateField('breakMinutes', $event)"
+        />
       </v-col>
     </v-row>
   </v-card>

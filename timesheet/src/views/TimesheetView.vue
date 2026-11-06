@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useTimesheetStore } from '../stores/timesheet'
 
 const store = useTimesheetStore()
@@ -45,7 +45,7 @@ function toDateKey(date: Date): string {
           <v-col cols="auto">
             <v-btn
               icon
-              @click="store.setWeekStart(prevWeek.value)"
+              @click="store.setWeekStart(prevWeek)"
               title="Previous Week"
             >
               <v-icon>mdi-chevron-left</v-icon>
@@ -55,7 +55,7 @@ function toDateKey(date: Date): string {
             <v-spacer />
             <v-btn
               icon
-              @click="store.setWeekStart(nextWeek.value)"
+              @click="store.setWeekStart(nextWeek)"
               title="Next Week"
             >
               <v-icon>mdi-chevron-right</v-icon>
@@ -83,14 +83,14 @@ function toDateKey(date: Date): string {
           :disabled="!store.isComplete"
           @click="store.submit()"
         >
-          {{ store.status === 'draft' ? 'Submit Timesheet' : 'Submitted' }}
+          {{ store.timesheet.status === 'draft' ? 'Submit Timesheet' : 'Submitted' }}
         </v-btn>
         <v-spacer />
         <v-chip
-          v-if="store.status !== 'draft'"
+          v-if="store.timesheet.status !== 'draft'"
           color="info"
         >
-          {{ store.status.charAt(0).toUpperCase() + store.status.slice(1) }}
+          {{ store.timesheet.status.charAt(0).toUpperCase() + store.timesheet.status.slice(1) }}
         </v-chip>
         <v-spacer>
           <v-chip
