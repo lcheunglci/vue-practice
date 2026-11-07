@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTimesheetStore } from '../stores/timesheet'
+import DayRow from '../components/DayRow.vue'
+import type { DayEntry } from '../stores/timesheet'
 
 const store = useTimesheetStore()
 
@@ -34,13 +36,13 @@ function toDateKey(date: Date): string {
     <v-card>
       <v-card-title>
         <v-card-title-row>
-          <v-col>
+          <v-col cols="4">
             <v-text-field
               v-model="store.timesheet.employeeName"
               label="Employee Name"
               required
               dense
-            ></v-text-field>
+            />
           </v-col>
           <v-col cols="auto">
             <v-btn
@@ -66,12 +68,11 @@ function toDateKey(date: Date): string {
 
       <v-card-text>
         <v-row>
-          <!-- Day rows -->
           <DayRow
             v-for="(_, i) in [0, 1, 2, 3, 4]"
             :key="i"
             :index="i"
-            :day="store.timesheet.days[i]"
+            :day="store.timesheet.days[i] as DayEntry"
           />
         </v-row>
       </v-card-text>

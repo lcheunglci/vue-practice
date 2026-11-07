@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
+const STORAGE_KEY = 'timesheet-data'
+
 export type TimesheetStatus = 'draft' | 'submitted' | 'approved'
 
 export interface DayEntry {
@@ -45,20 +47,43 @@ const blankDay = (date: string): DayEntry => ({
 
 export const useTimesheetStore = defineStore('timesheet', () => {
   const now = new Date()
-  const timesheet = ref<Timesheet>({
-    id: crypto.randomUUID(),
-    employeeName: '',
-    weekStart: toDateKey(getMonday(now)),
-    days: [0, 1, 2, 3, 4].map((i) => {
-      const day = new Date(getMonday(now))
-      day.setDate(getMonday(now).getDate() + i)
-      return blankDay(toDateKey(day))
-    }),
-    status: 'draft',
-  })
+
+  // Load from localStorage on store creation; fall back to defaults if none stored
+  let loaded: Timesheet | null = null
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) {
+      loaded = JSON.parse(raw) as Timesheet
+    }
+  } catch {
+    loaded = null
+  }
+
+  const timesheet = ref<Timesheet>(
+    loaded ?? {
+      id: crypto.randomUUID(),
+      employeeName: '',
+      weekStart: toDateKey(getMonday(now)),
+      days: [0, 1, 2, 3, 4].map((i) => {
+        const day = new Date(getMonday(now))
+        day.setDate(getMonday(now).getDate() + i)
+        return blankDay(toDateKey(day))
+      }),
+      status: 'draft',
+    },
+  )
+
+  const persist = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(timesheet.value))
+    } catch {
+      /* storage unavailable / full; skip silently */
+    }
+  }
 
   const setEmployeeName = (name: string) => {
     timesheet.value.employeeName = name
+    persist()
   }
 
   const setWeekStart = (date: string) => {
@@ -72,12 +97,14 @@ export const useTimesheetStore = defineStore('timesheet', () => {
         dayEntry.date = toDateKey(day)
       }
     }
+    persist()
   }
 
   const updateDay = (index: number, patch: Partial<DayEntry>) => {
     const day = timesheet.value.days[index]
     if (day) {
       timesheet.value.days[index] = { ...day, ...patch }
+      persist()
     }
   }
 
@@ -93,10 +120,12 @@ export const useTimesheetStore = defineStore('timesheet', () => {
       }),
       status: 'draft',
     }
+    persist()
   }
 
   const submit = () => {
     timesheet.value.status = 'submitted'
+    persist()
   }
 
   const dailyHours = computed(() => {
