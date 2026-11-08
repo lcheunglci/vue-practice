@@ -10,6 +10,11 @@ const props = defineProps<{
 
 const store = useTimesheetStore()
 
+const dayName = computed(() => {
+  const d = new Date(props.day.date + 'T00:00:00')
+  return d.toLocaleDateString(undefined, { weekday: 'long' })
+})
+
 const projects = ['Project Alpha', 'Project Beta', 'Project Gamma', 'Other']
 
 function updateField(field: keyof DayEntry, value: string | number) {
@@ -18,10 +23,22 @@ function updateField(field: keyof DayEntry, value: string | number) {
     store.timesheet.days[props.index] = { ...day, [field]: value }
   }
 }
+
+const clockOutEarly = computed(() => {
+  if (!props.day.clockIn || !props.day.clockOut) return false
+  const inParts = props.day.clockIn.split(':').map(Number)
+  const outParts = props.day.clockOut.split(':').map(Number)
+  if (inParts.length !== 2 || outParts.length !== 2) return false
+  const minutesIn = inParts[0] * 60 + inParts[1]
+  const minutesOut = outParts[0] * 60 + outParts[1]
+  return minutesOut < minutesIn
+})
 </script>
 
 <template>
   <v-card class="pa-4">
+    <div class="font-weight-bold text-caption mb-2">{{ dayName }}</div>
+
     <v-row justify="space-between" align="center">
       <v-col cols="4">
         <v-select
@@ -53,6 +70,8 @@ function updateField(field: keyof DayEntry, value: string | number) {
           type="time"
           label="Clock Out"
           dense
+          :error="clockOutEarly"
+          :error-messages="clockOutEarly ? ['Clock out must be after clock in'] : []"
           @update:model-value="updateField('clockOut', $event)"
         />
       </v-col>

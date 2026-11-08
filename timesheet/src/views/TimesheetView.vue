@@ -80,6 +80,12 @@ function toDateKey(date: Date): string {
       <v-card-actions>
         <v-spacer />
         <v-btn
+          variant="outlined"
+          @click="store.reset()"
+        >
+          Clear
+        </v-btn>
+        <v-btn
           color="primary"
           :disabled="!store.isComplete"
           @click="store.submit()"
