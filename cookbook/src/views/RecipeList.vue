@@ -89,6 +89,14 @@ function formatIngredients(ingredients: string[]): string {
       <v-col v-if="loading" cols="12" class="text-center">
         <v-progress-circular indeterminate color="primary" />
       </v-col>
+      <v-col v-if="recipes.length === 0" cols="12" class="text-center">
+        <v-card class="d-flex justify-center align-center" elevation="2">
+          <v-card-text class="text-center">
+            <h3 class="text-h5">No recipes yet</h3>
+            <p class="text-body-2">Click "Add Recipe" to start creating your first recipe!</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
       <v-col v-for="recipe in recipes" :key="recipe.id" cols="12" sm="6" md="4">
         <v-card elevation="2" class="h-100" @click="() => router.push(`/recipes/${recipe.id}`)" style="cursor: pointer;">
           <v-card-title>{{ recipe.title }}</v-card-title>

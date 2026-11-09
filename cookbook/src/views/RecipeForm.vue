@@ -33,7 +33,11 @@ async function loadTags() {
 async function submit() {
   loading.value = true;
   try {
-    const payload = { ...form, ingredients: typeof form.ingredients === 'string' ? form.ingredients.split(/\n|,/).filter(Boolean) : form.ingredients };
+    const payload = {
+      ...form,
+      ingredients: typeof form.ingredients === 'string' ? form.ingredients.split(/\n|,/).filter(Boolean) : form.ingredients,
+      tags: selectedTags.value,
+    };
     if (isNew.value) {
       await api.recipes.create(payload);
     } else {
