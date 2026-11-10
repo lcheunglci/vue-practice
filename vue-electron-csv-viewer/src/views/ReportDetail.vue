@@ -54,10 +54,12 @@
         :sort-by="[{ key: sortColumn, order: sortDirection }]"
         @update:sort-by="(newSort: any) => { if (newSort && Array.isArray(newSort) && newSort[0]) { sortColumn = newSort[0].key; sortDirection = newSort[0].order; } else if (newSort && newSort.key) { sortColumn = newSort.key; sortDirection = newSort.order; } }"
         class="elevation-1"
+        :items-per-page-options="[5, 10, 20]"
+        :items-per-page="5"
       >
         <template #item="{ item: row, index, props }">
           <tr v-bind="props">
-            <td>{{ index + 1 }}</td>
+            <td>{{ row.id }}</td>
             <template v-if="editMode">
               <td><v-text-field v-model="drafts[row.id]!.date" variant="solo" density="compact" hide-details /></td>
               <td><v-text-field v-model="drafts[row.id]!.orderId" variant="solo" density="compact" hide-details /></td>
@@ -124,7 +126,7 @@ const rowErrors = ref<Record<number, string>>({})
 const savingRowId = ref<number | null>(null)
 
 const headers = [
-  { title: '#', key: '#', sortable: false },
+  { title: 'ID', key: 'id', sortable: false },
   { title: 'Date', key: 'date', sortable: true },
   { title: 'Order ID', key: 'orderId', sortable: true },
   { title: 'Description', key: 'description', sortable: true },
