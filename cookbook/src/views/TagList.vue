@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { api } from '../composables/api';
+import { useToast } from '../composables/useToast';
 
 const tags = ref<{ id: number; name: string }[]>([]);
 const loading = ref(false);
+
+const { showToast } = useToast();
 
 async function loadTags() {
   loading.value = true;
@@ -18,6 +21,9 @@ function deleteTag(id: number) {
   if (!confirm('Delete this tag? Recipes using it will lose this tag.')) return;
   api.tags.delete(id).then(() => {
     tags.value = tags.value.filter(t => t.id !== id);
+    showToast('Tag deleted', 'success');
+  }).catch(() => {
+    showToast('Error deleting tag', 'error');
   });
 }
 
@@ -26,6 +32,9 @@ function editTag(tag: { id: number; name: string }) {
   if (!newName || newName === tag.name) return;
   api.tags.update(tag.id, newName).then(() => {
     tag.name = newName;
+    showToast('Tag renamed', 'success');
+  }).catch(() => {
+    showToast('Error renaming tag', 'error');
   });
 }
 

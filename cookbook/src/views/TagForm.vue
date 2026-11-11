@@ -2,16 +2,21 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { api } from '../composables/api';
+import { useToast } from '../composables/useToast';
 
 const router = useRouter();
 const name = ref('');
 const loading = ref(false);
+const { showToast } = useToast();
 
 async function submit() {
   loading.value = true;
   try {
     await api.tags.create(name.value);
+    showToast('Tag created successfully', 'success');
     router.push('/tags');
+  } catch (e) {
+    showToast('Error creating tag', 'error');
   } finally {
     loading.value = false;
   }

@@ -2,6 +2,7 @@
 import { reactive, ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { api, type RecipePayload, type Tag } from '../composables/api';
+import { useToast } from '../composables/useToast';
 
 const router = useRouter();
 const route = useRoute();
@@ -44,7 +45,10 @@ async function submit() {
       const id = Number(route.params.id);
       await api.recipes.update(id, payload);
     }
+    showToast('Recipe created successfully', 'success');
     router.push('/recipes');
+  } catch (e) {
+    showToast('Error creating recipe', 'error');
   } finally {
     loading.value = false;
   }
