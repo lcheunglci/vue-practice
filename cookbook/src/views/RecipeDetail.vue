@@ -17,11 +17,20 @@ async function loadRecipe() {
   }
 }
 
+const showDeleteDialog = ref(false);
+
 function deleteRecipe() {
-  if (!confirm('Delete this recipe?')) return;
-  api.recipes.delete(Number(route.params.id)).then(() => {
+  showDeleteDialog.value = true;
+}
+
+async function confirmDelete() {
+  showDeleteDialog.value = false;
+  try {
+    await api.recipes.delete(Number(route.params.id));
     router.push('/recipes');
-  });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 onMounted(loadRecipe);
@@ -76,4 +85,14 @@ watch(() => route.params.id, loadRecipe);
       </v-col>
     </v-row>
   </v-container>
+<v-dialog v-model="showDeleteDialog" max-width="400" class="mx-4">
+  <v-card>
+    <v-card-title>Delete Recipe</v-card-title>
+    <v-card-text>Are you sure you want to delete this recipe? This action cannot be undone.</v-card-text>
+    <v-card-actions>
+      <v-btn variant="text" @click="showDeleteDialog = false">Cancel</v-btn>
+      <v-btn color="error" @click="confirmDelete">Delete</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </template>
