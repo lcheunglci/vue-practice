@@ -5,29 +5,31 @@
       <router-view />
     </v-main>
     <v-snackbar
-      v-for="toast in toastMessages"
-      :key="toast.id"
-      v-model="toastMessages"
-      :color="toast.type === 'success' ? 'success' : toast.type === 'error' ? 'error' : 'info'"
+      v-if="currentToast"
+      v-model="snackbarOpen"
+      :color="currentToast.type === 'success' ? 'success' : currentToast.type === 'error' ? 'error' : 'info'"
       :timeout="3000"
       bottom
       right
-      class="toast-snackbar"
     >
-      {{ toast.text }}
+      {{ currentToast.text }}
     </v-snackbar>
   </v-app>
 </template>
 
 <script setup lang="ts">
 import AppBar from './components/AppBar.vue';
+import { computed } from 'vue';
 import { useToast } from './composables/useToast';
 
-const { messages: toastMessages } = useToast();
-</script>
+const { currentToast, hideToast } = useToast();
 
-<style scoped>
-.toast-snackbar {
-  margin: 0 16px 16px 0;
-}
-</style>
+const snackbarOpen = computed({
+  get: () => !!currentToast.value,
+  set: (value: boolean) => {
+    if (!value) {
+      hideToast();
+    }
+  },
+});
+</script>

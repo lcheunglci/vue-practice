@@ -45,7 +45,11 @@ async function submit() {
       const id = Number(route.params.id);
       await api.recipes.update(id, payload);
     }
-    showToast('Recipe created successfully', 'success');
+    if (isNew.value) {
+      showToast('Recipe created successfully', 'success');
+    } else {
+      showToast('Recipe updated successfully', 'success');
+    }
     router.push('/recipes');
   } catch (e) {
     showToast('Error creating recipe', 'error');

@@ -25,15 +25,12 @@ function deleteRecipe() {
 
 async function confirmDelete() {
   showDeleteDialog.value = false;
-  const message = 'Are you sure you want to delete this recipe? This action cannot be undone.';
-  showToast(message, 'error');
   try {
     await api.recipes.delete(Number(route.params.id));
     router.push('/recipes');
     showToast('Recipe deleted successfully', 'success');
   } catch (e) {
     showToast('Error deleting recipe', 'error');
-    throw e;
   }
 }
 
