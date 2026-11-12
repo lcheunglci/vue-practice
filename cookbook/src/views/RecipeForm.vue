@@ -22,6 +22,8 @@ const tags = ref<Tag[]>([]);
 const selectedTags = ref<number[]>([]);
 const loading = ref(false);
 
+const { showToast } = useToast();
+
 async function loadTags() {
   loading.value = true;
   try {
@@ -32,6 +34,7 @@ async function loadTags() {
 }
 
 async function submit() {
+  if (loading.value) return;
   loading.value = true;
   try {
     const payload = {
@@ -52,7 +55,7 @@ async function submit() {
     }
     router.push('/recipes');
   } catch (e) {
-    showToast('Error creating recipe', 'error');
+    showToast('Failed to save recipe', 'error');
   } finally {
     loading.value = false;
   }
@@ -173,6 +176,7 @@ onMounted(async () => {
             color="primary" 
             class="mt-4" 
             :loading="loading" 
+            :disabled="loading" 
           >
             {{ isNew ? 'Save Recipe' : 'Update Recipe' }}
           </v-btn>

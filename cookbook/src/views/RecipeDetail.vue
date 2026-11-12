@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { api, type Recipe } from '../composables/api';
+import { useToast } from '../composables/useToast';
 
 const route = useRoute();
 const router = useRouter();
@@ -18,6 +19,7 @@ async function loadRecipe() {
 }
 
 const showDeleteDialog = ref(false);
+const { showToast } = useToast();
 
 function deleteRecipe() {
   showDeleteDialog.value = true;
