@@ -29,41 +29,61 @@ function toDateKey(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
+
+const getThisWeekMonday = () => {
+  const today = new Date()
+  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1)
+  return toDateKey(monday)
+}
+
+const goToThisWeek = () => {
+  store.setWeekStart(getThisWeekMonday())
+}
+
+const isThisWeek = computed(() => store.timesheet.weekStart === getThisWeekMonday())
 </script>
 
 <template>
   <v-container fluid>
     <v-card>
       <v-card-title>
-        <v-card-title-row>
-          <v-col cols="4">
-            <v-text-field
-              v-model="store.timesheet.employeeName"
-              label="Employee Name"
-              required
-              dense
-            />
-          </v-col>
-          <v-col cols="auto">
-            <v-btn
-              icon
-              @click="store.setWeekStart(prevWeek)"
-              title="Previous Week"
-            >
-              <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
-            <v-spacer />
-            <v-chip>{{ weekStartLabel }}</v-chip>
-            <v-spacer />
-            <v-btn
-              icon
-              @click="store.setWeekStart(nextWeek)"
-              title="Next Week"
-            >
-              <v-icon>mdi-chevron-right</v-icon>
-            </v-btn>
-          </v-col>
-        </v-card-title-row>
+        <v-col cols="4">
+          <v-text-field
+            v-model="store.timesheet.employeeName"
+            label="Employee Name"
+            required
+            dense
+          />
+        </v-col>
+        <v-col cols="auto">
+          <v-btn
+            icon
+            @click="store.setWeekStart(prevWeek)"
+            title="Previous Week"
+          >
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+          <v-spacer />
+          <v-chip>{{ weekStartLabel }}</v-chip>
+          <v-spacer />
+          <v-btn
+            icon
+            @click="store.setWeekStart(nextWeek)"
+            title="Next Week"
+          >
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-col>
+        <v-col cols="auto">
+          <v-btn
+            variant="text"
+            color="primary"
+            @click="goToThisWeek"
+            :disabled="!isThisWeek"
+          >
+            This Week
+          </v-btn>
+        </v-col>
       </v-card-title>
 
       <v-card-text>

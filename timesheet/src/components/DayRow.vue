@@ -33,11 +33,26 @@ const clockOutEarly = computed(() => {
   const minutesOut = outParts[0] * 60 + outParts[1]
   return minutesOut < minutesIn
 })
+
+const hours = computed(() => {
+  if (!props.day.clockIn || !props.day.clockOut) return 0
+  const inParts = props.day.clockIn.split(':').map(Number)
+  const outParts = props.day.clockOut.split(':').map(Number)
+  if (inParts.length !== 2 || outParts.length !== 2) return 0
+  const minutesIn = inParts[0] * 60 + inParts[1]
+  const minutesOut = outParts[0] * 60 + outParts[1]
+  let worked = minutesOut - minutesIn - props.day.breakMinutes
+  if (worked < 0) worked = 0
+  return Math.round((worked / 60) * 100) / 100
+})
 </script>
 
 <template>
   <v-card class="pa-4">
-    <div class="font-weight-bold text-caption mb-2">{{ dayName }}</div>
+    <div class="d-flex justify-space-between align-center mb-2">
+      <span class="font-weight-bold text-caption">{{ dayName }}</span>
+      <v-chip v-if="hours > 0" size="small" color="primary">{{ hours }} hrs</v-chip>
+    </div>
 
     <v-row justify="space-between" align="center">
       <v-col cols="4">

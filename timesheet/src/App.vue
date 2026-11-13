@@ -22,13 +22,13 @@ const navigate = (path: string) => {
         </v-btn>
       </v-container>
     </v-app-bar>
-    <v-drawer v-model="drawer" app>
+        <v-navigation-drawer v-model="drawer" app>
       <v-list>
         <v-list-item @click="navigate('/timesheet')">
           <v-list-item-title>Timesheet</v-list-item-title>
         </v-list-item>
       </v-list>
-    </v-drawer>
+    </v-navigation-drawer>
     <v-main>
       <router-view />
     </v-main>
