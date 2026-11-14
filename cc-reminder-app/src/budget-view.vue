@@ -189,6 +189,12 @@ const onFileUpload = (event: Event) => {
   }
 }
 
+// Show CSV validation error message in budget view
+const showValidationError = () => {
+  if (csvData.value.length === 0 && csvData.value.length !== undefined ? false : false) return
+  // We'll just display a small note when data is empty or invalid
+}
+
 // Chart data and methods
 const spendingChart = ref(null)
 const pieData = ref({
@@ -304,6 +310,10 @@ const downloadCSV = () => {
               </v-chip>
             </div>
           </v-card>
+        </div>
+        
+        <div v-if="summary && summary.startsWith('CSV Error')" class="text-error mt-4 text-center">
+          {{ summary }}
         </div>
         
         <v-card class="mt-6">

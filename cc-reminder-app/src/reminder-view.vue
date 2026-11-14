@@ -61,30 +61,44 @@ const overdueReminders = computed(() => {
 })
 
 // Methods
+const formError = ref('')
+
 const openReminderModal = () => {
   showReminderModal.value = true
   // Reset form
   selectedDate.value = new Date()
   selectedDateStr.value = new Date().toISOString().split('T')[0]
   reminderDescription.value = ''
-}
-
-const closeReminderModal = () => {
-  showReminderModal.value = false
+  formError.value = ''
 }
 
 const addReminder = () => {
-  if (!reminderDescription.value.trim() || !selectedDateStr.value) return
+  const description = reminderDescription.value.trim()
+  const dateStr = selectedDateStr.value
+  
+  if (!description) {
+    formError.value = 'Please enter a reminder description.'
+    return
+  }
+  
+  if (!dateStr) {
+    formError.value = 'Please select a due date.'
+    return
+  }
   
   const newReminder = {
     id: Date.now().toString(),
-    date: new Date(selectedDateStr.value + 'T00:00:00').toISOString(),
-    description: reminderDescription.value.trim(),
+    date: new Date(dateStr + 'T00:00:00').toISOString(),
+    description: description,
     createdAt: new Date().toISOString()
   }
   
   reminders.value.push(newReminder)
   closeReminderModal()
+}
+
+const closeReminderModal = () => {
+  showReminderModal.value = false
 }
 
 const deleteReminder = (id) => {
@@ -210,6 +224,9 @@ const formatTime = (dateString) => {
               />
             </v-col>
           </v-row>
+          <div v-if="formError" class="text-error mt-2 text-caption">
+            {{ formError }}
+          </div>
         </v-card-text>
         
         <v-card-actions>
