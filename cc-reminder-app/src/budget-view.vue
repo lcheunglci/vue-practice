@@ -110,9 +110,20 @@ const sampleData = `Date,Description,Amount,Category
 `
 
 // Process and load CSV data
-const loadCSV = () => {
+const loadCSV = (file?: File) => {
   loading.value = true
-  // Simulate loading
+  if (file) {
+    // Parse CSV file
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const text = e.target?.result as string
+      processCSV(text)
+    }
+    reader.readAsText(file)
+    return
+  }
+  
+  // Fallback to sample data
   setTimeout(() => {
     const rows = sampleData.split('\n').slice(1)
     const data = rows.map(row => {
@@ -136,6 +147,46 @@ const loadCSV = () => {
     
     loading.value = false
   }, 500)
+}
+
+const processCSV = (text: string) => {
+  const lines = text.split('\\n')
+  const data: any[] = []
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+    if (!line) continue
+    
+    // Parse CSV with basic comma separation (no header line handling)
+    const values = line.split(',')
+    if (values.length >= 3) {
+      data.push({
+        date: values[0],
+        description: values[1],
+        amount: parseFloat(values[2]),
+        category: values[3] ?? ''
+      })
+    }
+  }
+  
+  csvData.value = data
+  
+  // Aggregate spending by category
+  data.forEach(row => {
+    if (row.category) {
+      spendingCategories[row.category] = (spendingCategories[row.category] || 0) + row.amount
+    }
+  })
+  
+  loading.value = false
+}
+
+const onFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    loadCSV(file)
+  }
 }
 
 // Chart data and methods
@@ -167,9 +218,6 @@ const summary = ref('')
 // Load data on mount
 onMounted(() => {
   loadCSV()
-  setTimeout(() => {
-    renderPieChart()
-  }, 1000)
 })
 
 // Methods
@@ -281,7 +329,26 @@ const downloadCSV = () => {
       <v-card-actions>
         <v-btn color="primary" @click="downloadCSV()">Download CSV</v-btn>
         <v-btn variant="outlined" @click="refreshChart()">Refresh Chart</v-btn>
+        <v-spacer />
+        <v-btn color="secondary" @click="loadCSV()">Load Sample</v-btn>
       </v-card-actions>
+    </v-card>
+    
+    <v-card class="mt-6">
+      <v-card-header>
+        <v-card-title>Upload CSV</v-card-title>
+      </v-card-header>
+      <v-card-text>
+        <v-file-input
+          label="Upload CSV file"
+          accept=".csv"
+          prepend-inner-icon="mdi-file-csv"
+          @update:model-value="onFileUpload"
+        />
+        <p class="text-body-2 text-grey-darken-1 mt-2">
+          Expected format: Date, Description, Amount, Category
+        </p>
+      </v-card-text>
     </v-card>
     
     <v-card class="mt-6">
