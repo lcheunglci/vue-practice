@@ -3,13 +3,36 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { api } from '../composables/api';
 
-const recipes = ref<{ id: number; title: string; description: string | null; ingredients: string[]; instructions: string; prepTime: number | null; cookTime: number | null; servings: number | null; tags: number[] }[]>([]);
+const recipes = ref<{ id: number; title: string; description: string | null; ingredients: string[]; instructions: string; prepTime: number | null; cookTime: number | null; servings: number | null; createdAt: number; tags: number[]; _displayTags?: string[] }[]>([]);
 const tags = ref<{ id: number; name: string }[]>([]);
 const search = ref('');
 const selectedTags = ref<number[]>([]);
 const ingredientFilter = ref('');
 const loading = ref(false);
 const router = useRouter();
+
+const sortOptions = [
+  { title: 'Newest first', value: 'newest' },
+  { title: 'Oldest first', value: 'oldest' },
+  { title: 'Title A–Z', value: 'title' },
+  { title: 'Shortest prep time', value: 'prepTime' },
+];
+const sortBy = ref('newest');
+
+const sortedRecipes = computed(() => {
+  const list = [...recipes.value];
+  switch (sortBy.value) {
+    case 'title':
+      return list.sort((a, b) => a.title.localeCompare(b.title));
+    case 'oldest':
+      return list.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    case 'prepTime':
+      return list.sort((a, b) => (a.prepTime ?? Infinity) - (b.prepTime ?? Infinity));
+    case 'newest':
+    default:
+      return list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  }
+});
 
 async function loadTags() {
   try {
@@ -83,6 +106,16 @@ function formatIngredients(ingredients: string[]): string {
           @update:model-value="loadRecipes"
         />
       </v-col>
+      <v-col cols="12" md="3">
+        <v-select
+          v-model="sortBy"
+          :items="sortOptions"
+          item-title="title"
+          item-value="value"
+          label="Sort by"
+          variant="outlined"
+        />
+      </v-col>
     </v-row>
 
     <v-row>
@@ -97,7 +130,7 @@ function formatIngredients(ingredients: string[]): string {
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col v-for="recipe in recipes" :key="recipe.id" cols="12" sm="6" md="4">
+      <v-col v-for="recipe in sortedRecipes" :key="recipe.id" cols="12" sm="6" md="4">
         <v-card elevation="2" class="h-100" @click="() => router.push(`/recipes/${recipe.id}`)" style="cursor: pointer;">
           <v-card-title>{{ recipe.title }}</v-card-title>
           <v-card-subtitle class="text-caption">{{ formatIngredients(recipe.ingredients || []) }}</v-card-subtitle>
