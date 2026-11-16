@@ -108,6 +108,7 @@ async function pickFile() {
     }
   } catch (err) {
     error.value = String(err)
+    window.reportApi?.logError?.('error', String(err), { component: 'AddReportDialog.vue', action: 'pickFile' })
   } finally {
     picking.value = false
   }
@@ -123,6 +124,7 @@ async function importReport() {
     close()
   } catch (err) {
     error.value = String(err)
+    window.reportApi?.logError?.('error', String(err), { component: 'AddReportDialog.vue', action: 'importReport', filePath: selectedFile.value })
   } finally {
     importing.value = false
   }

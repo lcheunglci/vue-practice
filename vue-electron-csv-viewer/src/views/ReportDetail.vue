@@ -168,7 +168,7 @@ async function saveName() {
     editingName.value = false
   } catch (err) {
     error.value = String(err)
-    window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'saveName', reportId: report.value.id })
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'saveName', reportId: report.value?.id })
   } finally {
     savingName.value = false
   }
@@ -184,7 +184,7 @@ async function deleteReport() {
     router.push('/reports')
   } catch (err) {
     error.value = String(err)
-    window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'deleteReport', reportId: report.value.id })
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'deleteReport', reportId: report.value?.id })
   } finally {
     deleting.value = false
   }
@@ -247,6 +247,7 @@ async function saveRow(row: ReportRow) {
     delete rowErrors.value[row.id]
   } catch (err) {
     rowErrors.value[row.id] = String(err)
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'saveRow', rowId: row.id })
   } finally {
     savingRowId.value = null
   }
