@@ -16,7 +16,7 @@
               v-model="selectedFile"
               readonly
               prepend-inner-icon="mdi-file-document"
-              :placeholder="selectedFile ? selectedFile : 'No file selected'"
+              placeholder="No file selected"
               hide-details
               class="flex-grow-1"
             />

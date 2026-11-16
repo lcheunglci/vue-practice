@@ -97,6 +97,7 @@ async function exportReport() {
       showInfo('Export cancelled.')
     } else if (result.ok && result.filePath) {
       showInfo(`Saved to ${result.filePath}`)
+      window.reportApi?.logError?.('success', `Export saved to ${result.filePath}`, { component: 'ExportView.vue', action: 'export' })
     } else {
       showError(result.message ?? 'Export failed')
     }

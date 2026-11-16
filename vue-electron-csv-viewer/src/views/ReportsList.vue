@@ -57,6 +57,7 @@
     <ConfirmClearDialog
       v-model="showClearModal"
       :report-count="reports.length"
+      @confirmed="confirmClearAll"
     />
   </v-container>
 </template>
@@ -105,6 +106,16 @@ function onImported() {
 function clearAll() {
   if (reports.value.length === 0) return
   showClearModal.value = true
+}
+
+async function confirmClearAll() {
+  try {
+    await reportService.clearAllReports()
+    await refresh()
+  } catch (err) {
+    error.value = String(err)
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportsList.vue', action: 'clearAll' })
+  }
 }
 
 async function remove(report: ReportSummary) {
