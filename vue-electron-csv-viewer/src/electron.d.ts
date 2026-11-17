@@ -54,6 +54,13 @@ export interface ElectronReportApi {
   exportReport(id: number, format: ExportFormat): Promise<ExportResult>;
   onToggleTheme(callback: (payload: { source: string }) => void): void;
   logError(level: 'error' | 'success' | 'info' | 'debug', message: string, context?: Record<string, any>): Promise<void>;
+  // Additional components
+  confirmDeleteDialog: {
+    modelValue: boolean;
+    reportName: string;
+    close(): void;
+    confirm(): void;
+  };
 }
 
 declare global {

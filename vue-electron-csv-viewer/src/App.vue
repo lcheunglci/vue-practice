@@ -35,8 +35,9 @@ import { computed, ref, onMounted } from 'vue'
 
 const theme = useTheme()
 
-// Use a local ref instead of relying on theme.global.current.value.dark
-const isDark = ref(true)
+// Persist theme choice so it survives restarts (localStorage key)
+const THEME_KEY = 'reports-insight-theme'
+const isDark = ref(localStorage.getItem(THEME_KEY) !== 'light')
 
 const themeColor = computed(() => isDark.value ? 'dark' : 'white')
 
@@ -49,9 +50,12 @@ const navTextColor = computed(() => isDark.value ? 'text-white' : 'text-dark')
 function toggleTheme() {
   isDark.value = !isDark.value
   theme.change(isDark.value ? 'dark' : 'light')
+  localStorage.setItem(THEME_KEY, isDark.value ? 'dark' : 'light')
 }
 
 onMounted(() => {
+  // sync Vuetify theme with the persisted preference on every startup
+  theme.change(isDark.value ? 'dark' : 'light')
   window.reportApi?.onToggleTheme?.(() => toggleTheme())
   window.reportApi?.logError?.('info', 'App initialized via Electron')
 })

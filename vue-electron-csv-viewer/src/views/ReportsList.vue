@@ -45,7 +45,7 @@
             <v-btn color="primary" variant="outlined" size="small" class="mr-2" @click="viewReport(report.id)">
               View
             </v-btn>
-            <v-btn color="error" variant="outlined" size="small" @click="remove(report)">
+            <v-btn color="error" variant="outlined" size="small" @click="askDelete(report)">
               Delete
             </v-btn>
           </td>
@@ -59,6 +59,11 @@
       :report-count="reports.length"
       @confirmed="confirmClearAll"
     />
+    <ConfirmDeleteDialog
+      v-model="showDeleteDialog"
+      :report-name="deleteTarget?.name ?? ''"
+      @confirmed="confirmDelete"
+    />
   </v-container>
 </template>
 
@@ -69,6 +74,7 @@ import { reportService } from '@/services/reportService'
 import type { ReportSummary } from '@/electron.d'
 import AddReportDialog from '@/components/AddReportDialog.vue'
 import ConfirmClearDialog from '@/components/ConfirmClearDialog.vue'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const router = useRouter()
 const reports = ref<ReportSummary[]>([])
@@ -77,6 +83,8 @@ const error = ref('')
 
 const showAddModal = ref(false)
 const showClearModal = ref(false)
+const showDeleteDialog = ref(false)
+const deleteTarget = ref<ReportSummary | null>(null)
 
 onMounted(() => {
   refresh()
@@ -118,16 +126,21 @@ async function confirmClearAll() {
   }
 }
 
-async function remove(report: ReportSummary) {
-  const confirmed = window.confirm(`Delete "${report.name}" and all of its rows?`)
-  if (!confirmed) return
+async function confirmDelete() {
+  if (!deleteTarget.value) return
   try {
-    await reportService.deleteReport(report.id)
-    refresh()
+    await reportService.deleteReport(deleteTarget.value.id)
+    await refresh()
   } catch (err) {
     error.value = String(err)
-    window.reportApi?.logError?.('error', String(err), { component: 'ReportsList.vue', action: 'remove' })
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportsList.vue', action: 'delete' })
   }
+  deleteTarget.value = null
+}
+
+function askDelete(report: ReportSummary) {
+  deleteTarget.value = report
+  showDeleteDialog.value = true
 }
 
 function viewReport(id: number) {

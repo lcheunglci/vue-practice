@@ -50,37 +50,29 @@ function createWindow() {
     }
   });
 
-  const splashPath = path.join(__dirname, 'splash.html');
-  if (DEV_URL) {
-    const req = require('http').get(DEV_URL, () => {
-      win.loadURL(DEV_URL);
-      win.webContents.on('dom-ready', () => {
-        win.show();
-        win.webContents.openDevTools();
-      });
-    });
-    req.on('error', () => {
-      // Vite not ready yet; poll
-      const tryLoad = () => {
-        const r = require('http').get(DEV_URL, () => {
-          win.loadURL(DEV_URL);
-          win.webContents.on('dom-ready', () => {
-            win.show();
-            win.webContents.openDevTools();
-          });
+  const loadDev = () => {
+    const attempt = () => {
+      const req = require('http').get(DEV_URL, () => {
+        win.loadURL(DEV_URL);
+        win.webContents.on('dom-ready', () => {
+          win.show();
+          win.webContents.openDevTools();
         });
-        r.on('error', () => setTimeout(tryLoad, 300));
-      };
-      setTimeout(tryLoad, 200);
-    });
-  } else {
-    win.loadFile(splashPath);
-    win.webContents.on('dom-ready', () => {
-      win.loadFile(PROD_INDEX);
-      win.webContents.on('dom-ready', () => {
-        win.show();
       });
-    });
+      req.on('error', () => setTimeout(attempt, 300));
+    };
+    attempt();
+  };
+
+  const loadProd = () => {
+    win.loadFile(PROD_INDEX);
+    win.webContents.on('dom-ready', () => win.show());
+  };
+
+  if (DEV_URL) {
+    loadDev();
+  } else {
+    loadProd();
   }
 }
 
@@ -143,9 +135,6 @@ function registerIpc() {
 }
 
 app.whenReady().then(() => {
-  app.setAsDefaultProtocolClient('https');
-  app.setAsDefaultProtocolClient('http');
-  app.setAsDefaultProtocolClient('file');
   app.commandLine.appendSwitch('disable-gpu-disk-cache');
   app.commandLine.appendSwitch('disable-http-cache');
 

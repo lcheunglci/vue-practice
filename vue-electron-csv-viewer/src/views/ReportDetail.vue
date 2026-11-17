@@ -42,7 +42,7 @@
             {{ editMode ? 'Done editing' : 'Edit rows' }}
           </v-btn>
           <v-btn variant="text" class="mr-2" @click="startEditingName">Rename</v-btn>
-          <v-btn color="error" variant="outlined" @click="deleteReport" :loading="deleting">
+          <v-btn color="error" variant="outlined" @click="askDelete" :loading="deleting">
             {{ deleting ? 'Deleting…' : 'Delete report' }}
           </v-btn>
         </v-col>
@@ -98,6 +98,8 @@
       <v-spacer class="my-4"></v-spacer>
       <v-btn variant="text" @click="goBack">Back</v-btn>
     </template>
+
+    <ConfirmDeleteDialog v-model="showDeleteDialog" @confirmed="confirmDelete" />
   </v-container>
 </template>
 
@@ -106,6 +108,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { reportService } from '@/services/reportService'
 import type { ReportDetail, ReportRow, ReportRowUpdate } from '@/electron.d'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -117,6 +120,7 @@ const editingName = ref(false)
 const nameDraft = ref('')
 const savingName = ref(false)
 const deleting = ref(false)
+const showDeleteDialog = ref(false)
 const sortColumn = ref<keyof ReportRow>('date')
 const sortDirection = ref<'asc' | 'desc'>('asc')
 const copiedId = ref<number | null>(null)
@@ -174,10 +178,8 @@ async function saveName() {
   }
 }
 
-async function deleteReport() {
+async function confirmDelete() {
   if (!report.value) return
-  const confirmed = window.confirm(`Delete "${report.value.name}" and all of its rows?`)
-  if (!confirmed) return
   deleting.value = true
   try {
     await reportService.deleteReport(report.value.id)
@@ -187,7 +189,12 @@ async function deleteReport() {
     window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'deleteReport', reportId: report.value?.id })
   } finally {
     deleting.value = false
+    showDeleteDialog.value = false
   }
+}
+
+function askDelete() {
+  showDeleteDialog.value = true
 }
 
 const totalCost = computed(() => {
