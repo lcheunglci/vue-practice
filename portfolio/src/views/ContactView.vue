@@ -1,0 +1,142 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const form = ref({
+  name: '',
+  email: '',
+  subject: '',
+  message: ''
+})
+const rules = {
+  required: (v: string) => !!v || 'This field is required',
+  email: (v: string) => /.+@.+\..+/.test(v) || 'Must be a valid email',
+  message: (v: string) => (v && v.length >= 10) || 'Message must be at least 10 characters'
+}
+
+const submitting = ref(false)
+const snackbar = ref(false)
+const snackbarText = ref('')
+const snackbarColor = ref('success')
+
+const submit = async () => {
+  submitting.value = true
+  // Simulate form submission
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  submitting.value = false
+  snackbar.value = true
+  snackbarText.value = 'Thanks for reaching out! I\'ll get back to you soon.'
+  snackbarColor.value = 'success'
+  form.value = { name: '', email: '', subject: '', message: '' }
+}
+
+</script>
+
+<template>
+  <v-row align="center" justify="center" class="min-vh-100 py-12">
+    <v-col cols="12" lg="8" md="10">
+      <v-card class="pa-0" outlined>
+        <v-card-title class="text-center py-8">
+          <h1 class="display-1 font-weight-bold mb-2">Get In Touch</h1>
+          <p class="body-1 text-medium-emphasis">
+            Have a project in mind? I'd love to hear about it.
+          </p>
+        </v-card-title>
+
+        <v-card-text class="px-8 pb-8">
+          <v-form ref="form" @submit.prevent="submit">
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="form.name"
+                  label="Your Name"
+                  :rules="[rules.required]"
+                  required
+                  prepend-inner-icon="mdi-account"
+                />
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="form.email"
+                  label="Email Address"
+                  type="email"
+                  :rules="[rules.required, rules.email]"
+                  required
+                  prepend-inner-icon="mdi-email"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="form.subject"
+                  label="Subject"
+                  :rules="[rules.required]"
+                  required
+                  prepend-inner-icon="mdi-subject"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="form.message"
+                  label="Message"
+                  :rules="[rules.required, rules.message]"
+                  required
+                  rows="5"
+                  prepend-inner-icon="mdi-message"
+                />
+              </v-col>
+              <v-col cols="12" class="text-center">
+                <v-btn
+                  type="submit"
+                  color="primary"
+                  size="large"
+                  block
+                  :loading="submitting"
+                >Send Message</v-btn>
+              </v-col>
+            </v-row>
+
+            <v-divider class="my-8" />
+
+            <h3 class="text-h6 font-weight-bold mb-4 text-center">Other Ways to Connect</h3>
+            <v-row class="justify-center">
+              <v-col cols="auto">
+                <v-btn
+                  variant="outlined"
+                  size="large"
+                  class="ma-2"
+                  href="https://github.com/yourusername"
+                  target="_blank"
+                  prepend-icon="mdi-github"
+                >GitHub</v-btn>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn
+                  variant="outlined"
+                  size="large"
+                  class="ma-2"
+                  href="https://linkedin.com/in/yourusername"
+                  target="_blank"
+                  prepend-icon="mdi-linkedin"
+                >LinkedIn</v-btn>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn
+                  variant="outlined"
+                  size="large"
+                  class="ma-2"
+                  href="mailto:you@example.com"
+                  target="_blank"
+                  prepend-icon="mdi-email"
+                >Email</v-btn>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
+
+  <v-snackbar v-model="snackbar" :color="snackbarColor" location="top" timeout="4000">
+    {{ snackbarText }}
+    <v-btn variant="text" size="large" color="primary" class="mb-2" @click="snackbar = false">Close</v-btn>
+  </v-snackbar>
+</template>

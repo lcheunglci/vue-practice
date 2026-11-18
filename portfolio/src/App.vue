@@ -1,85 +1,57 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { ref, watch } from 'vue'
+import { useDisplay, useTheme } from 'vuetify'
+
+const drawer = ref(true)
+const { mobile } = useDisplay()
+const theme = useTheme()
+
+const isDark = ref(theme.global.current.value.dark)
+
+watch(isDark, (val) => {
+  theme.global.name.value = val ? 'dark' : 'light'
+}, { immediate: true })
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <v-app>
+    <v-navigation-drawer v-model="drawer" :mobile="mobile" temporary>
+      <v-container class="pa-4 text-center">
+        <v-avatar color="primary" size="64" class="mb-3">
+          <span class="text-h4 font-weight-bold text-white">L</span>
+        </v-avatar>
+        <div class="text-h6 font-weight-bold">Your Name</div>
+        <div class="text-body-2 text-medium-emphasis mb-4">Software Developer</div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+        <v-divider class="my-3" />
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+        <v-list nav density="compact" selectable>
+          <v-list-item to="/" title="Home" value="home" prepend-icon="mdi-home" />
+          <v-list-item to="/about" title="About" value="about" prepend-icon="mdi-account" />
+          <v-list-item to="/projects" title="Projects" value="projects" prepend-icon="mdi-briefcase" />
+          <v-list-item to="/contact" title="Contact" value="contact" prepend-icon="mdi-email" />
+        </v-list>
+      </v-container>
+    </v-navigation-drawer>
 
-  <RouterView />
+    <v-app-bar color="primary" dark :elevation="2">
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <v-toolbar-title class="font-weight-bold">Your Name</v-toolbar-title>
+      <v-spacer />
+      <v-btn-toggle v-model="isDark" density="comfortable" class="d-none d-sm-flex">
+        <v-btn :value="false" icon="mdi-white-balance-sunny" size="small" />
+        <v-btn :value="true" icon="mdi-moon-waning-crescent" size="small" />
+      </v-btn-toggle>
+    </v-app-bar>
+
+    <v-main>
+      <router-view />
+    </v-main>
+
+    <v-footer color="surface-variant" class="text-center">
+      <div class="w-100 py-4 text-body-2 text-medium-emphasis">
+        © {{ new Date().getFullYear() }} Your Name · Built with Vue 3 & Vuetify
+      </div>
+    </v-footer>
+  </v-app>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
