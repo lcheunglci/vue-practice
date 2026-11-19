@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useDisplay, useTheme } from 'vuetify'
 
 const drawer = ref(true)
 const { mobile } = useDisplay()
 const theme = useTheme()
 
-const isDark = ref(theme.global.current.value.dark)
+// Initialise from localStorage so the saved preference wins on first paint
+const isDark = ref(localStorage.getItem('theme') === 'dark')
 
 watch(isDark, (val) => {
   theme.global.name.value = val ? 'dark' : 'light'
+  localStorage.setItem('theme', val ? 'dark' : 'light')
 }, { immediate: true })
 </script>
 
@@ -55,3 +57,6 @@ watch(isDark, (val) => {
     </v-footer>
   </v-app>
 </template>
+
+<style scoped>
+</style>

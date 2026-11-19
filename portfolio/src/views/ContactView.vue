@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import { socialLinks } from '@/config'
+
 const form = ref({
   name: '',
   email: '',
@@ -103,7 +105,7 @@ const submit = async () => {
                   variant="outlined"
                   size="large"
                   class="ma-2"
-                  href="https://github.com/yourusername"
+                  :href="socialLinks.github"
                   target="_blank"
                   prepend-icon="mdi-github"
                 >GitHub</v-btn>
@@ -113,7 +115,7 @@ const submit = async () => {
                   variant="outlined"
                   size="large"
                   class="ma-2"
-                  href="https://linkedin.com/in/yourusername"
+                  :href="socialLinks.linkedin"
                   target="_blank"
                   prepend-icon="mdi-linkedin"
                 >LinkedIn</v-btn>
@@ -123,7 +125,7 @@ const submit = async () => {
                   variant="outlined"
                   size="large"
                   class="ma-2"
-                  href="mailto:you@example.com"
+                  :href="`mailto:${socialLinks.email}`"
                   target="_blank"
                   prepend-icon="mdi-email"
                 >Email</v-btn>
