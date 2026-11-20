@@ -1,49 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { RouterView } from 'vue-router'
-import { VApp, VAppBar, VAppBarNavIcon, VAppBarTitle, VBtn, VIcon, VMain, 
-  VNavigationDrawer, VSpacer, VToolbar, VContainer, VList, VListItem, 
-  VListItemTitle
-} from 'vuetify/components'
+import { useTheme } from 'vuetify'
 
-const drawer = ref(false)
-const isDark = ref(false)
+const theme = useTheme()
+const isDark = computed(() => theme.global.name.value === 'dark')
 
-const toggleTheme = () => {
-  isDark.value = !isDark.value
+function toggleTheme() {
+  theme.global.name.value = isDark.value ? 'light' : 'dark'
 }
 </script>
 
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <v-app-bar-title>Stock Tracker</v-app-bar-title>
+    <v-app-bar color="primary" flat>
+      <v-app-bar-title>
+        <v-icon class="mr-2">mdi-chart-line-variant</v-icon>
+        Stock Tracker
+      </v-app-bar-title>
+
       <v-spacer />
-      <v-toolbar-items>
-        <v-btn variant="text" to="/">Watchlist</v-btn>
-        <v-btn variant="text" to="/about">About</v-btn>
-        <v-btn variant="text" @click="toggleTheme()">
-          <v-icon start>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-        </v-btn>
-      </v-toolbar-items>
+
+      <v-btn to="/" variant="text" prepend-icon="mdi-view-dashboard">Watchlist</v-btn>
+      <v-btn to="/about" variant="text" prepend-icon="mdi-information">About</v-btn>
+      <v-btn
+        :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+        variant="text"
+        :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+        @click="toggleTheme"
+      />
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer">
-      <v-list>
-        <v-list-item to="/" prepend-icon="mdi-view-dashboard">
-          <v-list-item-title>Watchlist</v-list-item-title>
-        </v-list-item>
-        <v-list-item to="/about" prepend-icon="mdi-information">
-          <v-list-item-title>About</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
     <v-main>
-      <v-container fluid>
-        <RouterView />
-      </v-container>
+      <RouterView />
     </v-main>
   </v-app>
 </template>

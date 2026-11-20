@@ -23,6 +23,16 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
 
   {
+    // Vuetify data tables use dotted slot names like `#item.name`, which the
+    // rule otherwise treats as an invalid modifier.
+    name: 'app/vuetify-slot-names',
+    files: ['**/*.vue'],
+    rules: {
+      'vue/valid-v-slot': ['error', { allowModifiers: true }],
+    },
+  },
+
+  {
     ...pluginPlaywright.configs['flat/recommended'],
     files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}'],
   },
