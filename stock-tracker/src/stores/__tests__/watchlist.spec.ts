@@ -31,7 +31,8 @@ describe('watchlist store', () => {
     expect(store.products).toHaveLength(1)
     expect(product.currentPrice).toBe(80)
     expect(product.inStock).toBe(true)
-    expect(product.priceHistory).toHaveLength(1)
+    // One seeded list-price point plus the initial quote.
+    expect(product.priceHistory).toHaveLength(2)
     expect(product.lastChecked).not.toBeNull()
   })
 

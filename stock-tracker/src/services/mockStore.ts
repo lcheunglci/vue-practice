@@ -29,9 +29,13 @@ export function round2(value: number): number {
 }
 
 /** Pick a plausible starting/list price for a newly added product. */
-export function basePriceFor(url: string, name: string): number {
+export function basePriceFor(url: string, name: string, targetPrice?: number): number {
   const seed = hashString(`${url}|${name}`)
-  // Range roughly $20 - $500, with cents
+  if (targetPrice && targetPrice > 0) {
+    // Anchor the list price 15% - 55% above the target so drops are meaningful.
+    return round2(targetPrice * (1.15 + (seed % 40) / 100))
+  }
+  // Fallback: range roughly $20 - $500, with cents
   return round2(20 + (seed % 48000) / 100)
 }
 
@@ -43,14 +47,18 @@ export async function fetchQuote(product: Product): Promise<Quote> {
   // Simulate network latency so loading states are visible.
   await sleep(250 + Math.random() * 550)
 
-  const base = product.basePrice > 0 ? product.basePrice : basePriceFor(product.url, product.name)
+  const base =
+    product.basePrice > 0
+      ? product.basePrice
+      : basePriceFor(product.url, product.name, product.targetPrice)
   // Random walk roughly between -12% and +10% of the base price.
   const drift = (Math.random() - 0.55) * 0.22
   const price = round2(Math.max(3, base * (1 + drift)))
 
-  // Original/list price sits 5% - 45% above the current price.
+  // Roughly half the time the product is discounted from its list price.
+  const onSale = Math.random() > 0.45
   const markup = 0.05 + Math.random() * 0.4
-  const originalPrice = round2(price * (1 + markup))
+  const originalPrice = onSale ? round2(price * (1 + markup)) : price
 
   // Most products are in stock, but some are not.
   const inStock = Math.random() > 0.22

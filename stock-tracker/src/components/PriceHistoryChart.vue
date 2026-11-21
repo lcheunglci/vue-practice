@@ -94,8 +94,8 @@ const targetY = computed(() => (props.target != null ? yAt(props.target) : null)
     <svg :viewBox="`0 0 ${W} ${H}`" class="w-100" role="img" aria-label="Price history chart">
       <defs>
         <linearGradient id="history-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="var(--v-theme-primary)" stop-opacity="0.28" />
-          <stop offset="100%" stop-color="var(--v-theme-primary)" stop-opacity="0" />
+          <stop offset="0%" stop-color="rgb(var(--v-theme-primary))" stop-opacity="0.28" />
+          <stop offset="100%" stop-color="rgb(var(--v-theme-primary))" stop-opacity="0" />
         </linearGradient>
       </defs>
 
@@ -106,17 +106,17 @@ const targetY = computed(() => (props.target != null ? yAt(props.target) : null)
           :x2="W - PAD_R"
           :y1="tick.y"
           :y2="tick.y"
-          stroke="var(--v-border-color)"
+          stroke="rgb(var(--v-theme-on-surface))"
           stroke-width="1"
           stroke-dasharray="4 4"
-          opacity="0.5"
+          opacity="0.15"
         />
         <text
           :x="PAD_L - 8"
           :y="tick.y + 4"
           text-anchor="end"
           font-size="11"
-          fill="var(--v-theme-on-surface)"
+          fill="rgb(var(--v-theme-on-surface))"
           opacity="0.6"
         >
           {{ formatCurrency(tick.value) }}
@@ -131,7 +131,7 @@ const targetY = computed(() => (props.target != null ? yAt(props.target) : null)
         :y="H - 8"
         text-anchor="middle"
         font-size="11"
-        fill="var(--v-theme-on-surface)"
+        fill="rgb(var(--v-theme-on-surface))"
         opacity="0.6"
       >
         {{ label.label }}
@@ -144,7 +144,7 @@ const targetY = computed(() => (props.target != null ? yAt(props.target) : null)
           :x2="W - PAD_R"
           :y1="targetY"
           :y2="targetY"
-          stroke="var(--v-theme-secondary)"
+          stroke="rgb(var(--v-theme-secondary))"
           stroke-width="1.5"
           stroke-dasharray="6 4"
         />
@@ -153,7 +153,7 @@ const targetY = computed(() => (props.target != null ? yAt(props.target) : null)
           :y="targetY - 5"
           text-anchor="end"
           font-size="11"
-          fill="var(--v-theme-secondary)"
+          fill="rgb(var(--v-theme-secondary))"
         >
           Target {{ formatCurrency(target) }}
         </text>
@@ -164,7 +164,7 @@ const targetY = computed(() => (props.target != null ? yAt(props.target) : null)
       <path
         :d="linePath"
         fill="none"
-        stroke="var(--v-theme-primary)"
+        stroke="rgb(var(--v-theme-primary))"
         stroke-width="2.5"
         stroke-linejoin="round"
         stroke-linecap="round"
@@ -176,8 +176,8 @@ const targetY = computed(() => (props.target != null ? yAt(props.target) : null)
         :cx="xAt(points.length - 1)"
         :cy="yAt(points[points.length - 1]!.price)"
         r="4"
-        fill="var(--v-theme-primary)"
-        stroke="var(--v-theme-surface)"
+        fill="rgb(var(--v-theme-primary))"
+        stroke="rgb(var(--v-theme-surface))"
         stroke-width="2"
       />
     </svg>

@@ -66,11 +66,11 @@ const targetY = computed(() => {
 
 const trendColor = computed(() => {
   const pts = props.points
-  if (pts.length < 2) return 'var(--v-theme-primary)'
+  if (pts.length < 2) return 'rgb(var(--v-theme-primary))'
   const last = pts[pts.length - 1]!.price
   const prev = pts[pts.length - 2]!.price
-  if (props.target != null && last <= props.target) return 'var(--v-theme-success)'
-  return last <= prev ? 'var(--v-theme-success)' : 'var(--v-theme-error)'
+  if (props.target != null && last <= props.target) return 'rgb(var(--v-theme-success))'
+  return last <= prev ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-error))'
 })
 
 const gradientId = `spark-${Math.random().toString(36).slice(2, 9)}`
@@ -99,7 +99,7 @@ const gradientId = `spark-${Math.random().toString(36).slice(2, 9)}`
       :x2="width - PAD"
       :y1="targetY"
       :y2="targetY"
-      stroke="var(--v-theme-secondary)"
+      stroke="rgb(var(--v-theme-secondary))"
       stroke-width="1"
       stroke-dasharray="3 3"
       opacity="0.7"

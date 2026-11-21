@@ -149,7 +149,8 @@ export const useWatchlistStore = defineStore('watchlist', () => {
   // CRUD
   // ---------------------------------------------------------------------------
   async function addProduct(data: ProductForm): Promise<Product> {
-    const basePrice = basePriceFor(data.url, data.name)
+    const basePrice = basePriceFor(data.url, data.name, data.targetPrice)
+    const now = new Date().toISOString()
     const product: Product = {
       id: uid(),
       name: data.name.trim(),
@@ -161,8 +162,9 @@ export const useWatchlistStore = defineStore('watchlist', () => {
       originalPrice: null,
       inStock: null,
       lastChecked: null,
-      priceHistory: [],
-      createdAt: new Date().toISOString(),
+      // Seed one point at the list price so the trend has a starting reference.
+      priceHistory: [{ date: now, price: basePrice }],
+      createdAt: now,
       notes: data.notes?.trim() || undefined,
     }
     products.value.push(product)
@@ -230,8 +232,12 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         targetPrice: 199,
       },
     ]
-    for (const item of demo) {
-      await addProduct(item)
+    isRefreshing.value = true
+    try {
+      await Promise.all(demo.map((item) => addProduct(item)))
+      lastRefresh.value = new Date().toISOString()
+    } finally {
+      isRefreshing.value = false
     }
   }
 
