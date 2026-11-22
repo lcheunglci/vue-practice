@@ -14,6 +14,9 @@ const dialogOpen = ref(false)
 const editing = ref<Product | null>(null)
 const refreshingId = ref<string | null>(null)
 
+const snackbar = ref(false)
+const deletedName = ref('')
+
 const search = ref('')
 const storeFilter = ref('all')
 const statusFilter = ref('all')
@@ -131,6 +134,17 @@ async function refreshOne(product: Product) {
 
 function removeProduct(product: Product) {
   store.removeProduct(product.id)
+  deletedName.value = product.name
+  snackbar.value = true
+}
+
+function undoRemove() {
+  store.undoRemove()
+  snackbar.value = false
+}
+
+function onSnackbarToggle(isOpen: boolean) {
+  if (!isOpen) store.clearLastDeleted()
 }
 
 function resetFilters() {
@@ -420,5 +434,17 @@ function discountFor(product: Product) {
     </v-card>
 
     <ProductDialog v-model="dialogOpen" :product="editing" @save="handleSave" />
+
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="6000"
+      location="bottom"
+      @update:model-value="onSnackbarToggle"
+    >
+      Removed <strong class="mx-1">{{ deletedName }}</strong>
+      <template #actions>
+        <v-btn color="primary" variant="text" @click="undoRemove">Undo</v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>

@@ -19,10 +19,23 @@ function blankForm(): ProductForm {
 }
 
 const form = ref<ProductForm>(blankForm())
+const storeSelection = ref('Amazon')
+const customStore = ref('')
 
 const formRef = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(null)
 
 const isEdit = computed(() => !!props.product)
+const showCustomStore = computed(() => storeSelection.value === 'Other')
+
+const required = (v: unknown) =>
+  (v !== null && v !== undefined && String(v).trim() !== '') || 'This field is required'
+const isUrl = (v: string) => /^https?:\/\/.+/i.test(v) || 'Enter a valid URL starting with http(s)://'
+const isPositive = (v: number) => (typeof v === 'number' && v > 0) || 'Enter a price greater than 0'
+
+const nameRules = [required]
+const urlRules = [required, isUrl]
+const priceRules = [isPositive]
+const customStoreRules = [required]
 
 watch(open, (isOpen) => {
   if (!isOpen) return
@@ -34,24 +47,28 @@ watch(open, (isOpen) => {
       targetPrice: props.product.targetPrice,
       notes: props.product.notes ?? '',
     }
+    if (storeOptions.includes(props.product.store)) {
+      storeSelection.value = props.product.store
+      customStore.value = ''
+    } else {
+      storeSelection.value = 'Other'
+      customStore.value = props.product.store
+    }
   } else {
     form.value = blankForm()
+    storeSelection.value = 'Amazon'
+    customStore.value = ''
   }
 })
-
-const required = (v: unknown) =>
-  (v !== null && v !== undefined && String(v).trim() !== '') || 'This field is required'
-const isUrl = (v: string) => /^https?:\/\/.+/i.test(v) || 'Enter a valid URL starting with http(s)://'
-const isPositive = (v: number) => (typeof v === 'number' && v > 0) || 'Enter a price greater than 0'
-
-const nameRules = [required]
-const urlRules = [required, isUrl]
-const priceRules = [isPositive]
 
 async function submit() {
   const result = await formRef.value?.validate()
   if (result && !result.valid) return
-  emit('save', { ...form.value, targetPrice: Number(form.value.targetPrice) })
+
+  const store = storeSelection.value === 'Other' ? customStore.value.trim() : storeSelection.value
+  if (!store) return
+
+  emit('save', { ...form.value, store, targetPrice: Number(form.value.targetPrice) })
   open.value = false
 }
 </script>
@@ -80,10 +97,9 @@ async function submit() {
           <v-row dense>
             <v-col cols="12" sm="6">
               <v-select
-                v-model="form.store"
+                v-model="storeSelection"
                 :items="storeOptions"
                 label="Store"
-                :rules="nameRules"
                 prepend-inner-icon="mdi-storefront-outline"
               />
             </v-col>
@@ -100,6 +116,15 @@ async function submit() {
               />
             </v-col>
           </v-row>
+
+          <v-text-field
+            v-if="showCustomStore"
+            v-model="customStore"
+            label="Store name"
+            placeholder="e.g. Newegg, Etsy, B&H Photo"
+            :rules="customStoreRules"
+            prepend-inner-icon="mdi-store-plus-outline"
+          />
 
           <v-text-field
             v-model="form.url"

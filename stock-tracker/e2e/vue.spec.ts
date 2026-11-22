@@ -17,3 +17,19 @@ test('can navigate to the about page', async ({ page }) => {
   await page.getByRole('link', { name: 'About' }).click()
   await expect(page.getByRole('heading', { name: 'About Stock Tracker' })).toBeVisible()
 })
+
+test('removes a product and can undo', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: /load demo data/i }).click()
+  await expect(page.getByText('Apple AirPods Pro')).toBeVisible({ timeout: 15000 })
+
+  const row = page.getByRole('row', { name: /Apple AirPods Pro/ })
+  await row.getByRole('button', { name: 'Remove product' }).click()
+
+  await expect(page.getByText(/Removed/)).toBeVisible()
+  await expect(page.getByRole('row', { name: /Apple AirPods Pro/ })).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Undo' }).click()
+  await expect(page.getByRole('row', { name: /Apple AirPods Pro/ })).toBeVisible()
+})
+

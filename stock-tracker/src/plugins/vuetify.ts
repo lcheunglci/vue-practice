@@ -2,13 +2,78 @@ import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 
 import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+import {
+  VAlert,
+  VApp,
+  VAppBar,
+  VAppBarTitle,
+  VAvatar,
+  VBtn,
+  VCard,
+  VCardActions,
+  VCardItem,
+  VCardText,
+  VCardTitle,
+  VChip,
+  VCol,
+  VContainer,
+  VDataTable,
+  VDialog,
+  VDivider,
+  VForm,
+  VIcon,
+  VList,
+  VListItem,
+  VListItemSubtitle,
+  VListItemTitle,
+  VMain,
+  VRow,
+  VSelect,
+  VSnackbar,
+  VSpacer,
+  VTable,
+  VTextarea,
+  VTextField,
+} from 'vuetify/components'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
+
+// Register only the components the app uses so the rest can be tree-shaken.
+const components = {
+  VAlert,
+  VApp,
+  VAppBar,
+  VAppBarTitle,
+  VAvatar,
+  VBtn,
+  VCard,
+  VCardActions,
+  VCardItem,
+  VCardText,
+  VCardTitle,
+  VChip,
+  VCol,
+  VContainer,
+  VDataTable,
+  VDialog,
+  VDivider,
+  VForm,
+  VIcon,
+  VList,
+  VListItem,
+  VListItemSubtitle,
+  VListItemTitle,
+  VMain,
+  VRow,
+  VSelect,
+  VSnackbar,
+  VSpacer,
+  VTable,
+  VTextarea,
+  VTextField,
+}
 
 export default createVuetify({
   components,
-  directives,
   icons: {
     defaultSet: 'mdi',
     aliases,

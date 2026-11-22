@@ -12,6 +12,7 @@ const router = useRouter()
 const store = useWatchlistStore()
 
 const dialogOpen = ref(false)
+const confirmOpen = ref(false)
 
 const product = computed<Product | undefined>(() =>
   store.products.find((p) => p.id === route.params.id),
@@ -40,8 +41,13 @@ function handleSave(form: ProductForm) {
 }
 
 function remove() {
+  confirmOpen.value = true
+}
+
+function confirmRemove() {
   if (!product.value) return
   store.removeProduct(product.value.id)
+  confirmOpen.value = false
   router.push('/')
 }
 
@@ -222,6 +228,26 @@ const stockLabel = computed(() => {
       </v-card>
 
       <ProductDialog v-model="dialogOpen" :product="product" @save="handleSave" />
+
+      <v-dialog v-model="confirmOpen" max-width="420">
+        <v-card>
+          <v-card-title class="d-flex align-center">
+            <v-icon color="error" class="mr-2">mdi-alert-circle-outline</v-icon>
+            Remove product?
+          </v-card-title>
+          <v-card-text>
+            <strong>{{ product.name }}</strong> will be removed from your watchlist. This can't be
+            undone from here.
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn variant="text" @click="confirmOpen = false">Cancel</v-btn>
+            <v-btn color="error" prepend-icon="mdi-delete-outline" @click="confirmRemove">
+              Remove
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </template>
 
     <!-- Not found -->

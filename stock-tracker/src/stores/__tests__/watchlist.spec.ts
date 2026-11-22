@@ -68,6 +68,27 @@ describe('watchlist store', () => {
     expect(store.products).toHaveLength(0)
   })
 
+  it('restores a removed product when undoing', async () => {
+    const store = useWatchlistStore()
+    const product = await store.addProduct({
+      name: 'Undo me',
+      store: 'Amazon',
+      url: 'https://example.com/undo',
+      targetPrice: 120,
+    })
+
+    expect(store.canUndo).toBe(false)
+
+    store.removeProduct(product.id)
+    expect(store.products).toHaveLength(0)
+    expect(store.canUndo).toBe(true)
+
+    store.undoRemove()
+    expect(store.products).toHaveLength(1)
+    expect(store.products[0]!.id).toBe(product.id)
+    expect(store.canUndo).toBe(false)
+  })
+
   it('persists products to localStorage', async () => {
     const store = useWatchlistStore()
     await store.addProduct({

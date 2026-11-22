@@ -25,6 +25,9 @@ export const useWatchlistStore = defineStore('watchlist', () => {
   const lastRefresh = ref<string | null>(null)
   const isRefreshing = ref(false)
 
+  // Snapshot of the most recently removed product so it can be restored.
+  const lastDeleted = ref<{ product: Product; alerts: Alert[]; index: number } | null>(null)
+
   // ---------------------------------------------------------------------------
   // Persistence
   // ---------------------------------------------------------------------------
@@ -173,8 +176,28 @@ export const useWatchlistStore = defineStore('watchlist', () => {
   }
 
   function removeProduct(id: string): void {
-    products.value = products.value.filter((p) => p.id !== id)
+    const index = products.value.findIndex((p) => p.id === id)
+    if (index === -1) return
+    const product = products.value[index]!
+    const removedAlerts = alerts.value.filter((a) => a.productId === id)
+    products.value.splice(index, 1)
     alerts.value = alerts.value.filter((a) => a.productId !== id)
+    lastDeleted.value = { product, alerts: removedAlerts, index }
+  }
+
+  function undoRemove(): void {
+    const snapshot = lastDeleted.value
+    if (!snapshot) return
+    const { product, alerts: restoredAlerts, index } = snapshot
+    products.value.splice(Math.min(index, products.value.length), 0, product)
+    if (restoredAlerts.length > 0) {
+      alerts.value = [...restoredAlerts, ...alerts.value]
+    }
+    lastDeleted.value = null
+  }
+
+  function clearLastDeleted(): void {
+    lastDeleted.value = null
   }
 
   function updateProduct(id: string, data: Partial<ProductForm>): void {
@@ -191,6 +214,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
     products.value = []
     alerts.value = []
     lastRefresh.value = null
+    lastDeleted.value = null
   }
 
   // ---------------------------------------------------------------------------
@@ -264,6 +288,8 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 
   const unreadAlertCount = computed(() => alerts.value.filter((a) => !a.read).length)
 
+  const canUndo = computed(() => lastDeleted.value !== null)
+
   const storeNames = computed(() => {
     const names = new Set(products.value.map((p) => p.store).filter(Boolean))
     return [...names].sort((a, b) => a.localeCompare(b))
@@ -278,6 +304,8 @@ export const useWatchlistStore = defineStore('watchlist', () => {
     // actions
     addProduct,
     removeProduct,
+    undoRemove,
+    clearLastDeleted,
     updateProduct,
     refreshProduct,
     refreshAll,
@@ -290,6 +318,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
     onSaleCount,
     atTargetCount,
     unreadAlertCount,
+    canUndo,
     storeNames,
   }
 })

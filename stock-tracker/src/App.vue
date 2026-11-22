@@ -1,14 +1,38 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { useTheme } from 'vuetify'
 
+const THEME_KEY = 'stock-tracker-theme'
+
 const theme = useTheme()
+
+// Restore the saved theme, otherwise follow the OS preference.
+if (typeof localStorage !== 'undefined') {
+  const saved = localStorage.getItem(THEME_KEY)
+  if (saved === 'light' || saved === 'dark') {
+    theme.global.name.value = saved
+  } else if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
+    theme.global.name.value = 'dark'
+  }
+}
+
 const isDark = computed(() => theme.global.name.value === 'dark')
 
 function toggleTheme() {
   theme.global.name.value = isDark.value ? 'light' : 'dark'
 }
+
+watch(
+  () => theme.global.name.value,
+  (name) => {
+    try {
+      localStorage.setItem(THEME_KEY, name)
+    } catch {
+      // Ignore storage failures (e.g. private mode).
+    }
+  },
+)
 </script>
 
 <template>
