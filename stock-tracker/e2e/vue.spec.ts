@@ -18,6 +18,16 @@ test('can navigate to the about page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'About Stock Tracker' })).toBeVisible()
 })
 
+test('persists the theme choice across reloads', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click()
+  await expect(page.getByRole('button', { name: 'Switch to light theme' })).toBeVisible()
+
+  await page.reload()
+  await expect(page.getByRole('button', { name: 'Switch to light theme' })).toBeVisible()
+})
+
 test('removes a product and can undo', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /load demo data/i }).click()
