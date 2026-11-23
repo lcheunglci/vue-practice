@@ -71,3 +71,10 @@ npm run test:e2e -- --debug
 ```sh
 npm run lint
 ```
+
+## Project-Specific Notes
+
+- Theme colors and dark/light mode are defined in `src/theme/index.ts`.
+- Social links and email placeholders are centralized in `src/config.ts`.
+- The app uses Vuetify 3 with auto-import of components via `vite-plugin-vuetify`.
+- Playwright e2e tests are in `e2e/vue.spec.ts`; run `npx playwright install` once to install browsers.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useDisplay, useTheme } from 'vuetify'
 
 const drawer = ref(true)
