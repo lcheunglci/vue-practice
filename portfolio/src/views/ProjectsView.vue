@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const FALLBACK_IMAGE = 'https://via.placeholder.com/400x225?text=Project+Image'
+
+// Track which projects have a broken image
+const failedImages = ref<Record<string, boolean>>({})
+
+function handleImageError(title: string) {
+  failedImages.value[title] = true
+}
+
+function isImageFailed(title: string) {
+  return failedImages.value[title] === true
+}
+
 // Experience timeline data
 const timelineItems = ref([
   {
@@ -43,6 +56,7 @@ const projects = ref([
     description: 'Full-stack e-commerce solution with React, Node.js, and PostgreSQL. Features payment integration, inventory management, and admin dashboard.',
     tech: ['React', 'Node.js', 'PostgreSQL', 'Stripe'],
     image: 'https://images.unsplash.com/photo-1563298723-dcfebaa71653?q=80&w=2070&auto=format&fit=crop',
+    imageAlt: 'E-commerce dashboard',
     link: 'https://github.com/example/ecommerce'
   },
   {
@@ -50,6 +64,7 @@ const projects = ref([
     description: 'Vue.js-based task management tool with real-time collaboration, team workspaces, and advanced reporting.',
     tech: ['Vue.js', 'Pinia', 'Socket.io', 'MongoDB'],
     image: 'https://images.unsplash.com/photo-1554224154-86c53a0e3c9a?q=80&w=2070&auto=format&fit=crop',
+    imageAlt: 'Task management board',
     link: 'https://github.com/example/task-manager'
   },
   {
@@ -57,6 +72,7 @@ const projects = ref([
     description: 'WebSocket-based chat application with presence detection, typing indicators, and message history.',
     tech: ['Vue.js', 'Express', 'WebSocket', 'Redis'],
     image: 'https://images.unsplash.com/photo-1516321318423-f06f85e567b3?q=80&w=2070&auto=format&fit=crop',
+    imageAlt: 'Chat interface',
     link: 'https://github.com/example/chat-app'
   }
 ])
@@ -123,11 +139,13 @@ const projects = ref([
           <v-col v-for="project in projects" :key="project.title" cols="12" md="6" lg="4">
             <v-card height="100%" class="d-flex flex-column">
               <v-img
-                :src="project.image"
+                :src="isImageFailed(project.title) ? FALLBACK_IMAGE : project.image"
+                :alt="isImageFailed(project.title) ? `${project.title} image unavailable` : project.imageAlt"
                 height="160"
                 cover
                 class="flex-shrink-0"
                 style="background-color: #f5f5f5;"
+                @error="() => handleImageError(project.title)"
               />
               <v-card-title class="text-h6 font-weight-bold">{{ project.title }}</v-card-title>
               <v-card-text class="text-body-2 flex-grow-1">

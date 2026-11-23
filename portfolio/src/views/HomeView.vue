@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
+const HERO_FALLBACK = 'https://via.placeholder.com/1200x400?text=Software+Developer'
+
+const heroFailed = ref(false)
+
+function handleHeroImageError() {
+  heroFailed.value = true
+}
 </script>
 
 <template>
@@ -6,11 +15,12 @@
     <v-col cols="12" lg="8" md="10">
       <v-card class="pa-0" outlined>
         <v-img
-          src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"
+          :src="heroFailed ? HERO_FALLBACK : 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop'"
           contain
           aspect-ratio="16/9"
           class="mb-4"
           filter="saturate(0.3) brightness(0.4)"
+          @error="handleHeroImageError"
         />
         <v-card-title class="text-center py-8">
           <h1 class="display-1 font-weight-bold mb-2">Software Developer</h1>

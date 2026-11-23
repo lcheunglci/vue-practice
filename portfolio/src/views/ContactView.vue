@@ -51,6 +51,7 @@ const submit = async () => {
                 <v-text-field
                   v-model="form.name"
                   label="Your Name"
+                  autocomplete="name"
                   :rules="[rules.required]"
                   required
                   prepend-inner-icon="mdi-account"
@@ -60,6 +61,7 @@ const submit = async () => {
                 <v-text-field
                   v-model="form.email"
                   label="Email Address"
+                  autocomplete="email"
                   type="email"
                   :rules="[rules.required, rules.email]"
                   required
@@ -70,6 +72,7 @@ const submit = async () => {
                 <v-text-field
                   v-model="form.subject"
                   label="Subject"
+                  autocomplete="subject"
                   :rules="[rules.required]"
                   required
                   prepend-inner-icon="mdi-subject"
@@ -79,6 +82,7 @@ const submit = async () => {
                 <v-textarea
                   v-model="form.message"
                   label="Message"
+                  autocomplete="off"
                   :rules="[rules.required, rules.message]"
                   required
                   rows="5"
@@ -140,7 +144,7 @@ const submit = async () => {
     </v-col>
   </v-row>
 
-  <v-snackbar v-model="snackbar" :color="snackbarColor" location="top" timeout="4000">
+  <v-snackbar v-model="snackbar" :color="snackbarColor" location="top" timeout="4000" role="status" aria-live="polite">
     {{ snackbarText }}
     <v-btn variant="text" size="large" color="primary" class="mb-2" @click="snackbar = false">Close</v-btn>
   </v-snackbar>
