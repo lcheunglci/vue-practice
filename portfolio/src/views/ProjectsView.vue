@@ -93,7 +93,7 @@ const projects = ref([
           <v-col v-for="skill in skills" :key="skill.category" cols="12" sm="6" md="4">
             <v-card class="pa-4" variant="outlined">
               <h3 class="text-h6 font-weight-bold mb-3">{{ skill.category }}</h3>
-              <v-chip-group column selectable>
+              <v-chip-group column>
                 <v-chip
                   v-for="item in skill.items"
                   :key="item"
@@ -150,7 +150,7 @@ const projects = ref([
               <v-card-title class="text-h6 font-weight-bold">{{ project.title }}</v-card-title>
               <v-card-text class="text-body-2 flex-grow-1">
                 {{ project.description }}
-                <v-chip-group class="mt-2" column selectable>
+                <v-chip-group class="mt-2" column>
                   <v-chip
                     v-for="tech in project.tech"
                     :key="tech"

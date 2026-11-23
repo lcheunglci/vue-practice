@@ -17,10 +17,10 @@ watch(isDark, (val) => {
 
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" :mobile="mobile" temporary>
+    <v-navigation-drawer v-model="drawer" :temporary="mobile" :permanent="!mobile">
       <v-container class="pa-4 text-center">
         <v-avatar color="primary" size="64" class="mb-3">
-          <span class="text-h4 font-weight-bold text-white">L</span>
+          <v-icon icon="mdi-account" size="32" color="white" />
         </v-avatar>
         <div class="text-h6 font-weight-bold">Your Name</div>
         <div class="text-body-2 text-medium-emphasis mb-4">Software Developer</div>
@@ -28,10 +28,10 @@ watch(isDark, (val) => {
         <v-divider class="my-3" />
 
         <v-list nav density="compact" selectable>
-          <v-list-item to="/" title="Home" value="home" prepend-icon="mdi-home" />
-          <v-list-item to="/about" title="About" value="about" prepend-icon="mdi-account" />
-          <v-list-item to="/projects" title="Projects" value="projects" prepend-icon="mdi-briefcase" />
-          <v-list-item to="/contact" title="Contact" value="contact" prepend-icon="mdi-email" />
+          <v-list-item to="/" title="Home" value="home" prepend-icon="mdi-home" @click="drawer = false" />
+          <v-list-item to="/about" title="About" value="about" prepend-icon="mdi-account" @click="drawer = false" />
+          <v-list-item to="/projects" title="Projects" value="projects" prepend-icon="mdi-briefcase" @click="drawer = false" />
+          <v-list-item to="/contact" title="Contact" value="contact" prepend-icon="mdi-email" @click="drawer = false" />
         </v-list>
       </v-container>
     </v-navigation-drawer>
@@ -43,7 +43,7 @@ watch(isDark, (val) => {
       />
       <v-toolbar-title class="font-weight-bold">Your Name</v-toolbar-title>
       <v-spacer />
-      <v-btn-toggle v-model="isDark" density="comfortable" class="d-none d-sm-flex">
+      <v-btn-toggle v-model="isDark" density="comfortable" class="d-flex">
         <v-btn
           :value="false"
           icon="mdi-white-balance-sunny"
