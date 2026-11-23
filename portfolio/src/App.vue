@@ -37,12 +37,25 @@ watch(isDark, (val) => {
     </v-navigation-drawer>
 
     <v-app-bar color="primary" dark :elevation="2">
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <v-app-bar-nav-icon
+        aria-label="Toggle navigation menu"
+        @click="drawer = !drawer"
+      />
       <v-toolbar-title class="font-weight-bold">Your Name</v-toolbar-title>
       <v-spacer />
       <v-btn-toggle v-model="isDark" density="comfortable" class="d-none d-sm-flex">
-        <v-btn :value="false" icon="mdi-white-balance-sunny" size="small" />
-        <v-btn :value="true" icon="mdi-moon-waning-crescent" size="small" />
+        <v-btn
+          :value="false"
+          icon="mdi-white-balance-sunny"
+          size="small"
+          aria-label="Switch to light mode"
+        />
+        <v-btn
+          :value="true"
+          icon="mdi-moon-waning-crescent"
+          size="small"
+          aria-label="Switch to dark mode"
+        />
       </v-btn-toggle>
     </v-app-bar>
 

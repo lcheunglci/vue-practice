@@ -108,6 +108,7 @@ const submit = async () => {
                   :href="socialLinks.github"
                   target="_blank"
                   prepend-icon="mdi-github"
+                  aria-label="View my GitHub profile"
                 >GitHub</v-btn>
               </v-col>
               <v-col cols="auto">
@@ -118,6 +119,7 @@ const submit = async () => {
                   :href="socialLinks.linkedin"
                   target="_blank"
                   prepend-icon="mdi-linkedin"
+                  aria-label="View my LinkedIn profile"
                 >LinkedIn</v-btn>
               </v-col>
               <v-col cols="auto">
@@ -128,6 +130,7 @@ const submit = async () => {
                   :href="`mailto:${socialLinks.email}`"
                   target="_blank"
                   prepend-icon="mdi-email"
+                  aria-label="Send email to me"
                 >Email</v-btn>
               </v-col>
             </v-row>
