@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import App from '../App.vue'
 import { createRouter, createMemoryHistory } from 'vue-router'
+import { createVuetify } from 'vuetify'
 import ReportsList from '../views/ReportsList.vue'
 
 describe('App', () => {
@@ -17,7 +18,7 @@ describe('App', () => {
     await router.isReady()
     const wrapper = mount(App, {
       global: {
-        plugins: [router]
+        plugins: [router, createVuetify()]
       }
     })
     expect(wrapper.text()).toContain('Reports Insight')

@@ -123,12 +123,30 @@
     </template>
 
     <ConfirmDeleteDialog v-model="showDeleteDialog" @confirmed="confirmDelete" />
+
+    <v-dialog
+      :model-value="showDiscardDialog"
+      max-width="440"
+      @update:model-value="(open: boolean) => { if (!open) resolveDiscard(false) }"
+    >
+      <v-card>
+        <v-card-title>Discard unsaved changes?</v-card-title>
+        <v-card-text>
+          You have row edits that haven't been saved. Leaving will discard them.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="resolveDiscard(false)">Keep editing</v-btn>
+          <v-btn color="error" variant="flat" @click="resolveDiscard(true)">Discard</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { reportService } from '@/services/reportService'
 import type { ReportDetail, ReportRow, ReportRowUpdate } from '@/electron.d'
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
@@ -152,6 +170,9 @@ const search = ref('')
 const drafts = ref<Record<number, ReportRowUpdate>>({})
 const rowErrors = ref<Record<number, string>>({})
 const savingRowId = ref<number | null>(null)
+const showDiscardDialog = ref(false)
+const suppressLeaveGuard = ref(false)
+let discardResolver: ((value: boolean) => void) | null = null
 
 const headers = [
   { title: 'ID', key: 'id', sortable: false },
@@ -164,7 +185,38 @@ const headers = [
 
 onMounted(() => {
   load()
+  window.addEventListener('beforeunload', handleBeforeUnload)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload)
+})
+
+function handleBeforeUnload(event: BeforeUnloadEvent) {
+  if (!hasUnsavedChanges.value) return
+  event.preventDefault()
+  event.returnValue = ''
+}
+
+onBeforeRouteLeave(async () => {
+  if (suppressLeaveGuard.value || !hasUnsavedChanges.value) return true
+  return await confirmDiscard()
+})
+
+function confirmDiscard(): Promise<boolean> {
+  showDiscardDialog.value = true
+  return new Promise<boolean>((resolve) => {
+    discardResolver = resolve
+  })
+}
+
+function resolveDiscard(discard: boolean) {
+  showDiscardDialog.value = false
+  if (discardResolver) {
+    discardResolver(discard)
+    discardResolver = null
+  }
+}
 
 async function load() {
   const id = Number(route.params.id)
@@ -207,6 +259,7 @@ async function confirmDelete() {
   deleting.value = true
   try {
     await reportService.deleteReport(report.value.id)
+    suppressLeaveGuard.value = true
     router.push('/reports')
   } catch (err) {
     error.value = String(err)
@@ -239,17 +292,32 @@ const filteredTotal = computed(() => {
   return filteredRows.value.reduce((sum, row) => sum + (row.cost || 0), 0)
 })
 
-function toggleEditMode() {
-  drafts.value = {}
-  Object.keys(rowErrors.value).forEach(key => delete rowErrors.value[Number(key)])
+const hasUnsavedChanges = computed(() => {
+  if (!editMode.value) return false
+  if (Object.keys(rowErrors.value).length > 0) return true
+  return (report.value?.rows ?? []).some((row) => isDirty(row))
+})
+
+async function toggleEditMode() {
   if (editMode.value) {
+    if (hasUnsavedChanges.value) {
+      const discard = await confirmDiscard()
+      if (!discard) return
+    }
+    drafts.value = {}
+    clearRowErrors()
     editMode.value = false
     return
   }
+  clearRowErrors()
   editMode.value = true
   for (const row of report.value?.rows ?? []) {
     drafts.value[row.id] = toDraft(row)
   }
+}
+
+function clearRowErrors() {
+  Object.keys(rowErrors.value).forEach((key) => delete rowErrors.value[Number(key)])
 }
 
 function isDirty(row: ReportRow): boolean {
