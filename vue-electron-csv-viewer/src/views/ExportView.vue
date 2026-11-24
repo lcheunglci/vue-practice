@@ -51,8 +51,11 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import type { ExportFormat, ReportSummary } from '@/electron.d'
 import { reportService } from '@/services/reportService'
+
+const route = useRoute()
 
 const reports = ref<ReportSummary[]>([])
 const selectedReportId = ref<number>(0)
@@ -76,7 +79,11 @@ async function loadReports() {
   loading.value = true
   try {
     reports.value = await reportService.listReports()
-    if (reports.value && reports.value.length > 0 && reports.value[0]) {
+    const requestedId = Number(route.query.reportId)
+    const requested = reports.value.find((r) => r.id === requestedId)
+    if (requested) {
+      selectedReportId.value = requested.id
+    } else if (reports.value && reports.value.length > 0 && reports.value[0]) {
       selectedReportId.value = reports.value[0].id
     }
   } catch (err) {

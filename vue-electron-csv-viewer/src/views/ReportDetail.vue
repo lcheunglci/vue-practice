@@ -41,6 +41,7 @@
           <v-btn variant="text" class="mr-2" @click="toggleEditMode">
             {{ editMode ? 'Done editing' : 'Edit rows' }}
           </v-btn>
+          <v-btn variant="text" class="mr-2" @click="goToExport">Export</v-btn>
           <v-btn variant="text" class="mr-2" @click="startEditingName">Rename</v-btn>
           <v-btn color="error" variant="outlined" @click="askDelete" :loading="deleting">
             {{ deleting ? 'Deleting…' : 'Delete report' }}
@@ -48,52 +49,74 @@
         </v-col>
       </v-row>
 
-      <v-data-table
-        :headers="headers"
-        :items="report.rows"
-        :sort-by="[{ key: sortColumn, order: sortDirection }]"
-        @update:sort-by="(newSort: any) => { if (newSort && Array.isArray(newSort) && newSort[0]) { sortColumn = newSort[0].key; sortDirection = newSort[0].order; } else if (newSort && newSort.key) { sortColumn = newSort.key; sortDirection = newSort.order; } }"
-        class="elevation-1"
-        :items-per-page-options="[5, 10, 20]"
-        :items-per-page="5"
-      >
-        <template #item="{ item: row, index, props }">
-          <tr v-bind="props">
-            <td>{{ row.id }}</td>
-            <template v-if="editMode">
-              <td><v-text-field v-model="drafts[row.id]!.date" variant="solo" density="compact" hide-details /></td>
-              <td><v-text-field v-model="drafts[row.id]!.orderId" variant="solo" density="compact" hide-details /></td>
-              <td><v-text-field v-model="drafts[row.id]!.description" variant="solo" density="compact" hide-details /></td>
-              <td><v-text-field v-model="drafts[row.id]!.cost" variant="solo" density="compact" hide-details /></td>
-            </template>
-            <template v-else>
-              <td>{{ row.date }}</td>
-              <td>{{ row.orderId }}</td>
-              <td>{{ row.description }}</td>
-              <td>{{ formatCurrency(row.cost) }}</td>
-            </template>
-            <td class="text-end">
+      <v-row class="mb-1" align="center">
+        <v-col cols="12" sm="6" md="4">
+          <v-text-field
+            v-model="search"
+            prepend-inner-icon="mdi-magnify"
+            label="Search rows"
+            density="compact"
+            variant="outlined"
+            hide-details
+            clearable
+          />
+        </v-col>
+      </v-row>
+
+      <v-alert v-if="report.rows.length === 0" type="info" variant="tonal" class="mb-4">
+        This report has no rows.
+      </v-alert>
+
+      <template v-else>
+        <v-data-table
+          :headers="headers"
+          :items="filteredRows"
+          :sort-by="[{ key: sortColumn, order: sortDirection }]"
+          @update:sort-by="(newSort: any) => { if (newSort && Array.isArray(newSort) && newSort[0]) { sortColumn = newSort[0].key; sortDirection = newSort[0].order; } else if (newSort && newSort.key) { sortColumn = newSort.key; sortDirection = newSort.order; } }"
+          class="elevation-1"
+          :items-per-page-options="[5, 10, 20]"
+          :items-per-page="5"
+        >
+          <template #item="{ item: row, index, props }">
+            <tr v-bind="props">
+              <td>{{ row.id }}</td>
               <template v-if="editMode">
-                <v-btn size="small" color="success" class="mr-1" :disabled="!isDirty(row) || savingRowId === row.id" @click="saveRow(row)">
-                  {{ savingRowId === row.id ? 'Saving…' : 'Save' }}
-                </v-btn>
-                <v-btn size="small" variant="text" @click="cancelRow(row)">Cancel</v-btn>
-                <v-chip v-if="rowErrors[row.id]" size="x-small" color="error">{{ rowErrors[row.id] }}</v-chip>
+                <td><v-text-field v-model="drafts[row.id]!.date" variant="solo" density="compact" hide-details /></td>
+                <td><v-text-field v-model="drafts[row.id]!.orderId" variant="solo" density="compact" hide-details /></td>
+                <td><v-text-field v-model="drafts[row.id]!.description" variant="solo" density="compact" hide-details /></td>
+                <td><v-text-field v-model="drafts[row.id]!.cost" variant="solo" density="compact" hide-details /></td>
               </template>
               <template v-else>
-                <v-btn size="small" variant="text" @click="copyRow(row)" :title="copyTitle(row.id)">
-                  {{ copiedId === row.id ? 'Copied!' : 'Copy' }}
-                </v-btn>
+                <td>{{ row.date }}</td>
+                <td>{{ row.orderId }}</td>
+                <td>{{ row.description }}</td>
+                <td>{{ formatCurrency(row.cost) }}</td>
               </template>
-            </td>
-          </tr>
-        </template>
+              <td class="text-end">
+                <template v-if="editMode">
+                  <v-btn size="small" color="success" class="mr-1" :disabled="!isDirty(row) || savingRowId === row.id" @click="saveRow(row)">
+                    {{ savingRowId === row.id ? 'Saving…' : 'Save' }}
+                  </v-btn>
+                  <v-btn size="small" variant="text" @click="cancelRow(row)">Cancel</v-btn>
+                  <v-chip v-if="rowErrors[row.id]" size="x-small" color="error">{{ rowErrors[row.id] }}</v-chip>
+                </template>
+                <template v-else>
+                  <v-btn size="small" variant="text" @click="copyRow(row)" :title="copyTitle(row.id)">
+                    {{ copiedId === row.id ? 'Copied!' : 'Copy' }}
+                  </v-btn>
+                </template>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
 
-      </v-data-table>
-
-      <v-row v-if="report.rows.length > 0" class="mt-2 justify-end align-center" style="gap: 8px">
-        <div class="text-end font-weight-bold">Total {{ formatCurrency(totalCost) }}</div>
-      </v-row>
+        <v-row class="mt-2 justify-end align-center" style="gap: 8px">
+          <div class="text-end font-weight-bold">
+            Total {{ formatCurrency(filteredTotal) }}
+            <span v-if="search.trim()" class="text-caption text-grey-6">(filtered)</span>
+          </div>
+        </v-row>
+      </template>
 
       <v-spacer class="my-4"></v-spacer>
       <v-btn variant="text" @click="goBack">Back</v-btn>
@@ -125,6 +148,7 @@ const sortColumn = ref<keyof ReportRow>('date')
 const sortDirection = ref<'asc' | 'desc'>('asc')
 const copiedId = ref<number | null>(null)
 const editMode = ref(false)
+const search = ref('')
 const drafts = ref<Record<number, ReportRowUpdate>>({})
 const rowErrors = ref<Record<number, string>>({})
 const savingRowId = ref<number | null>(null)
@@ -197,8 +221,22 @@ function askDelete() {
   showDeleteDialog.value = true
 }
 
-const totalCost = computed(() => {
-  return report.value?.rows.reduce((sum, row) => sum + (row.cost || 0), 0) ?? 0
+const filteredRows = computed(() => {
+  const rows = report.value?.rows ?? []
+  const query = search.value.trim().toLowerCase()
+  if (!query) return rows
+  return rows.filter((row) => {
+    return (
+      row.date.toLowerCase().includes(query) ||
+      String(row.orderId).toLowerCase().includes(query) ||
+      row.description.toLowerCase().includes(query) ||
+      String(row.cost).includes(query)
+    )
+  })
+})
+
+const filteredTotal = computed(() => {
+  return filteredRows.value.reduce((sum, row) => sum + (row.cost || 0), 0)
 })
 
 function toggleEditMode() {
@@ -344,6 +382,15 @@ function csvField(value: unknown): string {
 }
 
 function goBack() {
-  router.back()
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/reports')
+  }
+}
+
+function goToExport() {
+  if (!report.value) return
+  router.push({ path: '/export', query: { reportId: report.value.id } })
 }
 </script>
