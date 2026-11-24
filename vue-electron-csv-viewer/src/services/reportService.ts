@@ -30,6 +30,10 @@ export class ReportService {
     return this.requireApi().updateRow(id, values);
   }
 
+  deleteRow(id: number): Promise<boolean> {
+    return this.requireApi().deleteRow(id);
+  }
+
   deleteReport(id: number): Promise<boolean> {
     return this.requireApi().deleteReport(id);
   }

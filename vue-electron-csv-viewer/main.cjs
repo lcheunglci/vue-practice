@@ -10,6 +10,7 @@ const {
   renameReport,
   updateRow,
   deleteReport,
+  deleteRow,
   clearAllReports,
   exportRowsToJson,
   exportRowsToSpreadsheet
@@ -107,6 +108,8 @@ function registerIpc() {
   );
 
   ipcMain.handle('report:delete', (_event, id) => deleteReport(db, id));
+
+  ipcMain.handle('report:delete-row', (_event, id) => deleteRow(db, id));
 
   ipcMain.handle('report:clear', () => clearAllReports(db));
 

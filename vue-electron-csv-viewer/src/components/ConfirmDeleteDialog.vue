@@ -21,7 +21,7 @@ const props = defineProps({
   reportName: { type: String, default: '' }
 })
 
-const emit = defineEmits(['update:modelValue', 'confirm'])
+const emit = defineEmits(['update:modelValue', 'confirmed'])
 
 const modelValue = computed({
   get: () => props.modelValue ?? false,
@@ -33,7 +33,7 @@ function close() {
 }
 
 function confirm() {
-  emit('confirm')
+  emit('confirmed')
   close()
 }
 </script>

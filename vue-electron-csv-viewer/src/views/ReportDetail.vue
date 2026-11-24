@@ -104,6 +104,15 @@
                   <v-btn size="small" variant="text" @click="copyRow(row)" :title="copyTitle(row.id)">
                     {{ copiedId === row.id ? 'Copied!' : 'Copy' }}
                   </v-btn>
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    color="error"
+                    :loading="deletingRowId === row.id"
+                    @click="askDeleteRow(row)"
+                  >
+                    Delete
+                  </v-btn>
                 </template>
               </td>
             </tr>
@@ -141,6 +150,32 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="showDeleteRowDialog"
+      max-width="440"
+    >
+      <v-card>
+        <v-card-title>Delete row</v-card-title>
+        <v-card-text>
+          Delete row <strong>#{{ rowToDelete?.id }}</strong>
+          <template v-if="rowToDelete?.description">
+            ("{{ rowToDelete.description }}")
+          </template>
+          ? This cannot be undone.
+        </v-card-text>
+        <v-card-actions>
+          <v-btn variant="text" @click="showDeleteRowDialog = false">Cancel</v-btn>
+          <v-btn
+            color="error"
+            variant="outlined"
+            :loading="deletingRowId !== null"
+            @click="confirmDeleteRow"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -172,6 +207,9 @@ const rowErrors = ref<Record<number, string>>({})
 const savingRowId = ref<number | null>(null)
 const showDiscardDialog = ref(false)
 const suppressLeaveGuard = ref(false)
+const rowToDelete = ref<ReportRow | null>(null)
+const showDeleteRowDialog = ref(false)
+const deletingRowId = ref<number | null>(null)
 let discardResolver: ((value: boolean) => void) | null = null
 
 const headers = [
@@ -272,6 +310,32 @@ async function confirmDelete() {
 
 function askDelete() {
   showDeleteDialog.value = true
+}
+
+function askDeleteRow(row: ReportRow) {
+  rowToDelete.value = row
+  showDeleteRowDialog.value = true
+}
+
+async function confirmDeleteRow() {
+  const target = rowToDelete.value
+  if (!target || !report.value) return
+  deletingRowId.value = target.id
+  try {
+    const deleted = await reportService.deleteRow(target.id)
+    if (deleted) {
+      report.value.rows = report.value.rows.filter((row) => row.id !== target.id)
+      delete drafts.value[target.id]
+      delete rowErrors.value[target.id]
+    }
+  } catch (err) {
+    error.value = String(err)
+    window.reportApi?.logError?.('error', String(err), { component: 'ReportDetail.vue', action: 'deleteRow', rowId: target.id })
+  } finally {
+    deletingRowId.value = null
+    rowToDelete.value = null
+    showDeleteRowDialog.value = false
+  }
 }
 
 const filteredRows = computed(() => {

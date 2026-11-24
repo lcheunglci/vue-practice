@@ -126,6 +126,11 @@ function deleteReport(db, id) {
   return result.changes > 0;
 }
 
+function deleteRow(db, rowId) {
+  const result = db.prepare('DELETE FROM report_rows WHERE id = ?').run(rowId);
+  return result.changes > 0;
+}
+
 function clearAllReports(db) {
   return db.prepare('DELETE FROM reports').run().changes;
 }
@@ -167,6 +172,7 @@ module.exports = {
   renameReport,
   updateRow,
   deleteReport,
+  deleteRow,
   clearAllReports,
   exportRowsToJson,
   exportRowsToSpreadsheet
