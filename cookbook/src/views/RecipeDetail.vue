@@ -12,9 +12,21 @@ const loading = ref(false);
 async function loadRecipe() {
   loading.value = true;
   try {
-    recipe.value = await api.recipes.get(Number(route.params.id));
-  } finally {
+    const recipeData = await api.recipes.get(Number(route.params.id));
+    recipe.value = recipeData;
+
+    // Load tags and map tag IDs to names
+    const tags = await api.tags.list();
+    const tagMap = new Map<number, string>();
+    for (const tag of tags) {
+      tagMap.set(tag.id, tag.name);
+    }
+    const displayTags = [...recipeData.tags].map((tid: number) => tagMap.get(tid)).filter((name): name is string => name !== undefined);
+    recipe._displayTags = displayTags;
+
     loading.value = false;
+  } catch (e) {
+    console.error('Failed to load recipe', e);
   }
 }
 
@@ -71,6 +83,22 @@ watch(() => route.params.id, loadRecipe);
           </v-card-text>
         </v-card>
 
+        <v-card class="mb-4">
+          <v-card-title>Tags</v-card-title>
+          <v-card-text>
+            <div class="d-flex gap-2 mt-2">
+              <v-chip
+                v-for="tagName in recipe._displayTags"
+                :key="tagName"
+                size="small"
+                variant="outlined"
+                color="primary"
+              >{{ tagName }}
+              </v-chip>
+            </div>
+          </v-card-text>
+        </v-card>
+
         <v-row class="mt-4">
           <v-col cols="3">
             <div class="text-body-2">Prep Time</div>
@@ -83,6 +111,10 @@ watch(() => route.params.id, loadRecipe);
           <v-col cols="3">
             <div class="text-body-2">Servings</div>
             <div class="text-h6">{{ recipe.servings }}</div>
+          </v-col>
+          <v-col cols="3">
+            <div class="text-body-2">Created</div>
+            <div class="text-h6">{{ new Date(recipe.createdAt).toLocaleDateString() }}</div>
           </v-col>
         </v-row>
       </v-col>
