@@ -2,17 +2,48 @@
 import { ref, watch } from 'vue'
 import { useDisplay, useTheme } from 'vuetify'
 
+const STORAGE_KEY = 'theme'
+
+type ThemeName = 'light' | 'dark'
+
+function readStoredTheme(): ThemeName | null {
+  try {
+    const value = localStorage.getItem(STORAGE_KEY)
+    return value === 'dark' || value === 'light' ? value : null
+  } catch {
+    // localStorage can throw when storage is disabled (e.g. private mode)
+    return null
+  }
+}
+
+function preferredTheme(): ThemeName {
+  const stored = readStoredTheme()
+  if (stored) return stored
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+  return 'light'
+}
+
 const drawer = ref(true)
 const { mobile } = useDisplay()
 const theme = useTheme()
 
-// Initialise from localStorage so the saved preference wins on first paint
-const isDark = ref(localStorage.getItem('theme') === 'dark')
+const isDark = ref(preferredTheme() === 'dark')
 
-watch(isDark, (val) => {
-  theme.global.name.value = val ? 'dark' : 'light'
-  localStorage.setItem('theme', val ? 'dark' : 'light')
-}, { immediate: true })
+watch(
+  isDark,
+  (val) => {
+    const name: ThemeName = val ? 'dark' : 'light'
+    theme.change(name)
+    try {
+      localStorage.setItem(STORAGE_KEY, name)
+    } catch {
+      // Ignore storage errors; the theme still applies for this session
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

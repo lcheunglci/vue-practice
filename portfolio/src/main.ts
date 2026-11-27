@@ -18,6 +18,18 @@ const vuetify = createVuetify({
 
 const app = createApp(App)
 
+app.config.errorHandler = (err, instance, info) => {
+  console.error('[app error]', {
+    error: err,
+    info,
+    component: instance?.$options?.name,
+  })
+}
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[unhandled rejection]', event.reason)
+})
+
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
