@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { api } from '../composables/api';
 
@@ -10,6 +10,16 @@ const selectedTags = ref<number[]>([]);
 const ingredientFilter = ref('');
 const loading = ref(false);
 const router = useRouter();
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+const DEBOUNCE_MS = 300;
+
+function debouncedLoadRecipes() {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    loadRecipes();
+  }, DEBOUNCE_MS);
+}
 
 const sortOptions = [
   { title: 'Newest first', value: 'newest' },
@@ -64,6 +74,10 @@ onMounted(async () => {
   await loadRecipes();
 });
 
+onUnmounted(() => {
+  if (debounceTimer) clearTimeout(debounceTimer);
+});
+
 function formatIngredients(ingredients: string[]): string {
   return ingredients.join(', ');
 }
@@ -79,7 +93,7 @@ function formatIngredients(ingredients: string[]): string {
           prepend-icon="mdi-magnify"
           variant="outlined"
           clearable
-          @update:model-value="loadRecipes"
+          @update:model-value="debouncedLoadRecipes"
         />
       </v-col>
       <v-col cols="12" md="3">
@@ -103,7 +117,7 @@ function formatIngredients(ingredients: string[]): string {
           prepend-icon="mdi-carrot"
           variant="outlined"
           clearable
-          @update:model-value="loadRecipes"
+          @update:model-value="debouncedLoadRecipes"
         />
       </v-col>
       <v-col cols="12" md="3">
